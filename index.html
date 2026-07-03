@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Momentum Asset V5</title>
+  <meta name="theme-color" content="#0f172a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="toast"></div>
+<aside id="side" class="side">
+  <div class="brand">Momentum<br><span>Asset V5</span></div>
+  <button class="nav active" data-page="dashboard">Dashboard</button>
+  <button class="nav" data-page="homes">Gayrimenkuller</button>
+  <button class="nav" data-page="cars">Araçlar</button>
+  <button class="nav" data-page="calendar">Takvim</button>
+  <button class="nav" data-page="documents">Belgeler</button>
+  <button class="nav" data-page="reports">Raporlar</button>
+  <button class="nav" data-page="definitions">Tanımlar</button>
+  <button class="nav" data-page="backup">Yedek</button>
+  <button id="logout" class="nav danger">Çıkış</button>
+</aside>
+<main>
+  <header>
+    <button id="menu">☰</button>
+    <h1 id="title">Dashboard</h1>
+    <input id="globalSearch" class="search" placeholder="Ara: ev, araç, DASK, MTV, belge...">
+    <button id="themeBtn" title="Tema">◐</button>
+    <button id="quick">+ Hızlı İşlem</button>
+  </header>
+  <section id="auth" class="card auth">
+    <h2>Momentum Asset</h2>
+    <p class="muted">Ev, araç, kira, gider, belge ve varlık değerlerini telefon ve bilgisayarda ortak takip et.</p>
+    <input id="email" placeholder="E-posta">
+    <input id="pass" type="password" placeholder="Şifre">
+    <div class="row"><button id="login">Giriş</button><button id="signup" class="secondary">Üye Ol</button></div>
+    <small class="muted">İlk kullanımda üye ol. Supabase mail onayı isterse gelen kutunu kontrol et.</small>
+  </section>
+  <section id="app" class="hidden"><div id="content"></div></section>
+</main>
+<button id="fab" class="fab">+</button>
+<div id="modal" class="modal hidden"><div class="modalbox"><button id="close" class="x">×</button><div id="modalbody"></div></div></div>
+<script src="app.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}</script>
+</body>
+</html>
