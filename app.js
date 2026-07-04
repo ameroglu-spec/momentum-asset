@@ -19,11 +19,83 @@ async function ensureDefaults(){const need=[];Object.entries(DEFAULTS).forEach((
 function defs(type,activeOnly=true){return state.definitions.filter(d=>d.type===type&&(!activeOnly||d.active))}
 function optionHtml(type,selected=''){let arr=defs(type);if(!arr.length)arr=(DEFAULTS[type]||[]).map(name=>({name}));const val=selected||arr[0]?.name||'Diğer';return arr.map(o=>`<option value="${esc(o.name)}" ${o.name===val?'selected':''}>${esc(o.name)}</option>`).join('')}
 function statusClass(s){return ['Ödendi','Alındı'].includes(s)?'ok':(s==='Gecikti'?'bad':'warn')}
-function page(p){currentPage=p;document.querySelectorAll('.nav[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==p));$('title').textContent={dashboard:'Dashboard',homes:'Gayrimenkuller',cars:'Araçlar',calendar:'Takvim',documents:'Belgeler',reports:'Raporlar',definitions:'Tanımlar',backup:'Yedek'}[p]||p;({dashboard,homes,cars,calendar,documents,reports,definitions,backup}[p])();$('side').classList.remove('open')}
+function page(p){currentPage=p;document.querySelectorAll('.nav[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==p));$('title').textContent={dashboard:'Bugün',homes:'Varlıklar',cars:'Araçlar',calendar:'Takvim',documents:'Belgeler',reports:'Raporlar',definitions:'Tanımlar',backup:'Yedek'}[p]||p;({dashboard,homes,cars,calendar,documents,reports,definitions,backup}[p])();$('side').classList.remove('open')}
 function sum(arr,type){return arr.filter(e=>e.type===type).reduce((s,e)=>s+Number(e.amount||0),0)}
 function assetValue(){return state.homes.reduce((s,h)=>s+Number(h.current_value||0),0)+state.cars.reduce((s,c)=>s+Number(c.current_value||0),0)}
 function assetValueBreakdown(){return {home:state.homes.reduce((s,h)=>s+Number(h.current_value||0),0),car:state.cars.reduce((s,c)=>s+Number(c.current_value||0),0)}}
-function dashboard(){const y=new Date().getFullYear(),m=new Date().getMonth();const month=state.entries.filter(e=>new Date(e.date).getMonth()==m&&new Date(e.date).getFullYear()==y);const income=sum(month,'income'),exp=sum(month,'expense');const yin=sum(state.entries.filter(e=>new Date(e.date).getFullYear()==y),'income');const yex=sum(state.entries.filter(e=>new Date(e.date).getFullYear()==y),'expense');const upcoming=getUpcoming();const docs=state.documents.length;const values=assetValueBreakdown();$('content').innerHTML=`<div class="hero"><span class="muted">Momentum Asset</span><b>${fmt(assetValue())}</b><span class="muted">Net varlık: Ev ${fmt(values.home)} + Araç ${fmt(values.car)}</span></div><div class="grid"><div class="kpi"><span>Bu Ay Gelir</span><b>${fmt(income)}</b></div><div class="kpi"><span>Bu Ay Gider</span><b>${fmt(exp)}</b></div><div class="kpi"><span>Bu Ay Net</span><b>${fmt(income-exp)}</b></div><div class="kpi"><span>Yaklaşan</span><b>${upcoming.length} kayıt</b></div></div><div class="grid"><div class="kpi"><span>Ev</span><b>${state.homes.length}</b></div><div class="kpi"><span>Araç</span><b>${state.cars.length}</b></div><div class="kpi"><span>Belge</span><b>${docs}</b></div><div class="kpi"><span>Yıllık Net</span><b>${fmt(yin-yex)}</b></div></div><div class="grid3"><div class="card"><h2>Önümüzdeki 30 Gün</h2>${calendarTimeline(upcoming, true)}</div><div class="card"><h2>Finans Asistanı</h2>${assistantTips(income,exp,yin,yex,upcoming)}</div></div><div class="grid2"><div class="card"><h2>En Çok Gider Kategorileri</h2>${topExpenseBars()}</div><div class="card"><h2>Son Hareketler</h2>${state.entries.slice(0,6).map(e=>entryCard(e,false)).join('')||'<p class="muted">Henüz kayıt yok.</p>'}</div></div><div class="grid2"><div class="card"><h2>Evler</h2>${state.homes.map(h=>assetLine('home',h)).join('')||'<p class="muted">Henüz ev yok.</p>'}</div><div class="card"><h2>Araçlar</h2>${state.cars.map(c=>assetLine('car',c)).join('')||'<p class="muted">Henüz araç yok.</p>'}</div></div>`}
+function dashboard(){
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth();
+  const month=state.entries.filter(e=>new Date(e.date).getMonth()==m&&new Date(e.date).getFullYear()==y);
+  const income=sum(month,'income'),exp=sum(month,'expense');
+  const upcoming=getUpcoming();
+  const overdue=state.entries.filter(e=>!['Ödendi','Alındı','İptal'].includes(e.status)&&new Date(e.date)<new Date(today()));
+  const recent=[...state.entries].slice(0,5);
+  const weekday=now.toLocaleDateString('tr-TR',{weekday:'long'});
+  const dateText=now.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+  const ai=homeAiBrief(income,exp,upcoming,overdue);
+  $('content').innerHTML=`
+    <div class="home-shell">
+      <section class="home-hero">
+        <div>
+          <span class="eyebrow">Momentum Hub</span>
+          <h2>Bugün</h2>
+          <p>${esc(weekday)} · ${esc(dateText)}</p>
+        </div>
+        <div class="home-slogan">Know Today.<br>Plan Tomorrow.</div>
+      </section>
+
+      <section class="home-grid-main">
+        <div class="home-card ai-card">
+          <div class="home-card-head"><span>🤖</span><div><b>AI Önerileri</b><small>Odaklanman gerekenler</small></div></div>
+          <div class="ai-list">${ai.map(x=>`<div class="ai-item">${x}</div>`).join('')}</div>
+        </div>
+
+        <div class="home-card">
+          <div class="home-card-head"><span>📅</span><div><b>Yaklaşan İşler</b><small>Önümüzdeki 30 gün</small></div></div>
+          ${upcoming.length?`<div class="upcoming-list">${upcoming.slice(0,6).map(e=>homeUpcomingRow(e)).join('')}</div>`:'<div class="empty compact">Yaklaşan kayıt yok.</div>'}
+        </div>
+      </section>
+
+      <section class="home-status-grid">
+        <div class="home-stat"><span>Bu Ay Gelir</span><b>${fmt(income)}</b></div>
+        <div class="home-stat"><span>Bu Ay Gider</span><b>${fmt(exp)}</b></div>
+        <div class="home-stat"><span>Bekleyen</span><b>${upcoming.length}</b></div>
+        <div class="home-stat"><span>Geciken</span><b>${overdue.length}</b></div>
+      </section>
+
+      <section class="home-grid-main lower">
+        <div class="home-card">
+          <div class="home-card-head"><span>📊</span><div><b>Bugünkü Durum</b><small>Kısa finans özeti</small></div></div>
+          <div class="today-summary">
+            <div><span>Aylık Net</span><b>${fmt(income-exp)}</b></div>
+            <div><span>Toplam Varlık</span><b>${fmt(assetValue())}</b></div>
+            <div><span>Ev / Araç</span><b>${state.homes.length} / ${state.cars.length}</b></div>
+          </div>
+        </div>
+        <div class="home-card">
+          <div class="home-card-head"><span>📰</span><div><b>Son Hareketler</b><small>En son 5 kayıt</small></div></div>
+          ${recent.length?recent.map(e=>homeRecentRow(e)).join(''):'<div class="empty compact">Henüz hareket yok.</div>'}
+        </div>
+      </section>
+    </div>`
+}
+function homeAiBrief(income,exp,upcoming,overdue){
+  const tips=[];
+  if(overdue.length) tips.push(`<b>${overdue.length} geciken kayıt</b> var. Önce bunları kontrol et.`);
+  if(upcoming.length) tips.push(`<b>${upcoming.length} yaklaşan iş</b> var. En yakın tarih: ${esc(upcoming[0].date)}.`);
+  tips.push(`Bu ay net durumun <b>${fmt(income-exp)}</b>.`);
+  if(!state.homes.length&&!state.cars.length) tips.push(`Başlamak için önce bir ev veya araç ekle.`);
+  return tips.slice(0,4);
+}
+function homeUpcomingRow(e){
+  const asset=e.home_id?state.homes.find(h=>h.id===e.home_id)?.name:state.cars.find(c=>c.id===e.car_id)?.name;
+  return `<div class="home-row"><div><b>${esc(e.category||'Kayıt')}</b><small>${esc(asset||'Varlık')} · ${esc(e.status||'Bekleniyor')}</small></div><time>${esc(e.date)}</time></div>`
+}
+function homeRecentRow(e){
+  const asset=e.home_id?state.homes.find(h=>h.id===e.home_id)?.name:state.cars.find(c=>c.id===e.car_id)?.name;
+  return `<div class="home-row recent"><div><b>${esc(e.category||'Kayıt')}</b><small>${esc(asset||'Varlık')} · ${esc(e.date)}</small></div><strong class="${e.type==='income'?'pos':'neg'}">${e.type==='income'?'+':'-'}${fmt(e.amount)}</strong></div>`
+}
 function assistantTips(income,exp,yin,yex,upcoming){const tips=[];tips.push(`Bu ay net nakit akışın <b>${fmt(income-exp)}</b>.`);if(upcoming.length)tips.push(`${upcoming.length} adet yaklaşan ödeme/tahsilat var.`);const overdue=state.entries.filter(e=>!['Ödendi','Alındı','İptal'].includes(e.status)&&new Date(e.date)<new Date(today()));if(overdue.length)tips.push(`${overdue.length} kayıt gecikmiş görünüyor.`);tips.push(`Bu yıl toplam net durum <b>${fmt(yin-yex)}</b>.`);return tips.map(t=>`<div class="item">${t}</div>`).join('')}
 function topExpenseBars(){const rows=group(state.entries.filter(e=>e.type==='expense'),'category');const max=Math.max(...rows.map(r=>r.total),1);return rows.slice(0,6).map(r=>`<div><div class="row"><b style="flex:1">${esc(r.key)}</b><span>${fmt(r.total)}</span></div><div class="bar"><i style="width:${Math.round(r.total/max*100)}%"></i></div></div>`).join('')||'<p class="muted">Gider kaydı yok.</p>'}
 function assetLine(kind,a){const ent=state.entries.filter(e=>kind=='home'?e.home_id==a.id:e.car_id==a.id);const inc=sum(ent,'income'),ex=sum(ent,'expense');return `<div class="item"><h3>${esc(a.name)}</h3><span class="muted">Değer: ${fmt(a.current_value)} | Gelir: ${fmt(inc)} | Gider: ${fmt(ex)} | Net: ${fmt(inc-ex)}</span></div>`}
