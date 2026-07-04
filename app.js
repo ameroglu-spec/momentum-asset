@@ -503,3 +503,106 @@ function doSearch(q){
   $('title').textContent='Arama';
   $('content').innerHTML=`<div class="search-v6-head card"><div><span class="eyebrow">Global Search</span><h2>Arama Sonuçları</h2><p class="muted">“${esc(q)}” için ${homes.length+cars.length+entries.length+docs.length} sonuç bulundu.</p></div></div><div class="detail-grid"><div class="card"><h2>Varlıklar</h2>${homes.map(h=>`<div class="item"><b>🏠 ${esc(h.name)}</b><p class="muted">${esc(h.address||'')}</p><button class="small secondary" onclick="showAssetDetail('home','${h.id}','overview')">Detay</button></div>`).join('')}${cars.map(c=>`<div class="item"><b>🚗 ${esc(c.name)}</b><p class="muted">${esc(c.plate||'')}</p><button class="small secondary" onclick="showAssetDetail('car','${c.id}','overview')">Detay</button></div>`).join('')||''}</div><div class="card"><h2>Gelir / Gider</h2>${entries.map(e=>entryCard(e,true)).join('')||'<div class="empty">Kayıt yok.</div>'}</div></div><div class="card"><h2>Belgeler</h2>${docs.map(d=>docRow(d)).join('')||'<div class="empty">Belge yok.</div>'}</div>`;
 }
+
+
+/* V6 Sprint C2 - Global Search 2.0 */
+var mhSearchFilter='all';
+function normalizeSearchText(v){
+  return (v??'').toString().toLocaleLowerCase('tr-TR')
+    .replaceAll('ı','i').replaceAll('İ','i').replaceAll('ğ','g').replaceAll('ü','u')
+    .replaceAll('ş','s').replaceAll('ö','o').replaceAll('ç','c');
+}
+function searchAssetNameForEntry(e){
+  return e.home_id ? (state.homes.find(h=>h.id===e.home_id)?.name||'') : (state.cars.find(c=>c.id===e.car_id)?.name||'');
+}
+function searchBuildItems(){
+  const items=[];
+  state.homes.forEach(h=>items.push({group:'homes',type:'home',id:h.id,icon:'🏠',title:h.name||'Ev',meta:h.address||h.kind||'Gayrimenkul',amount:h.current_value,date:h.created_at?.slice(0,10),status:h.tenant_name||'',text:JSON.stringify(h)}));
+  state.cars.forEach(c=>items.push({group:'cars',type:'car',id:c.id,icon:'🚗',title:c.name||'Araç',meta:[c.plate,c.note].filter(Boolean).join(' · ')||'Araç',amount:c.current_value,date:c.created_at?.slice(0,10),status:c.km?Number(c.km).toLocaleString('tr-TR')+' km':'',text:JSON.stringify(c)}));
+  state.entries.forEach(e=>{
+    const asset=searchAssetNameForEntry(e);
+    items.push({group:e.type==='income'?'income':'expense',type:'entry',id:e.id,icon:e.type==='income'?'💰':'💸',title:e.category||'Kayıt',meta:asset||'Varlık yok',amount:e.amount,date:e.date,status:e.status||'',entry:e,text:[JSON.stringify(e),asset,entryLabel(e)].join(' ')});
+  });
+  state.documents.forEach(d=>{
+    const asset=d.home_id?state.homes.find(h=>h.id===d.home_id)?.name:state.cars.find(c=>c.id===d.car_id)?.name;
+    const e=state.entries.find(x=>x.id===d.entry_id);
+    items.push({group:'documents',type:'document',id:d.id,icon:'📄',title:d.doc_type||'Belge',meta:[d.file_name,asset].filter(Boolean).join(' · '),amount:'',date:(d.created_at||'').slice(0,10),status:e?e.category||'İlişkili kayıt':'Genel belge',doc:d,text:[JSON.stringify(d),asset||'',e?entryLabel(e):''].join(' ')});
+  });
+  return items;
+}
+function searchMatch(item,q){
+  if(!q)return false;
+  const hay=normalizeSearchText([item.title,item.meta,item.status,item.date,item.amount,item.text].join(' '));
+  return hay.includes(normalizeSearchText(q));
+}
+function searchSaveRecent(q){
+  q=(q||'').trim(); if(q.length<2)return;
+  const key='mh_recent_searches';
+  const arr=JSON.parse(localStorage.getItem(key)||'[]').filter(x=>normalizeSearchText(x)!==normalizeSearchText(q));
+  arr.unshift(q); localStorage.setItem(key,JSON.stringify(arr.slice(0,10)));
+}
+function searchRecent(){return JSON.parse(localStorage.getItem('mh_recent_searches')||'[]')}
+function searchFavs(){return JSON.parse(localStorage.getItem('mh_fav_searches')||'[]')}
+function searchToggleFav(q){
+  q=(q||'').trim(); if(!q)return;
+  const arr=searchFavs();
+  const n=normalizeSearchText(q);
+  const exists=arr.some(x=>normalizeSearchText(x)===n);
+  const next=exists?arr.filter(x=>normalizeSearchText(x)!==n):[q,...arr].slice(0,10);
+  localStorage.setItem('mh_fav_searches',JSON.stringify(next));
+  doSearch(q);
+}
+function runSavedSearch(q){$('globalSearch').value=q;doSearch(q)}
+function setSearchFilter(f){mhSearchFilter=f;doSearch(($('globalSearch')?.value||'').trim(),true)}
+function openSearchResult(type,id){
+  if(type==='home')return showAssetDetail('home',id,'overview');
+  if(type==='car')return showAssetDetail('car',id,'overview');
+  if(type==='entry'){
+    const e=state.entries.find(x=>x.id===id); if(!e)return toast('Kayıt bulunamadı.');
+    return entryForm(e.home_id?'home':'car',e.home_id||e.car_id,e.type,e.id);
+  }
+  if(type==='document')return showDocDetail(id);
+}
+function searchResultCard(item){
+  return `<article class="search-card-v62 ${item.group}">
+    <div class="search-card-icon">${item.icon}</div>
+    <div class="search-card-copy"><b>${esc(item.title)}</b><span>${esc(item.meta||'')}</span><small>${esc(item.date||'')} ${item.status?'· '+esc(item.status):''} ${item.amount?('· '+fmt(item.amount)):''}</small></div>
+    <button class="small secondary" onclick="openSearchResult('${item.type}','${item.id}')">Aç</button>
+  </article>`;
+}
+function searchGroupTitle(g){return {homes:'Evler',cars:'Araçlar',income:'Gelirler',expense:'Giderler',documents:'Belgeler'}[g]||g}
+function searchGroupIcon(g){return {homes:'🏠',cars:'🚗',income:'💰',expense:'💸',documents:'📄'}[g]||'🔎'}
+function renderSearchEmpty(q){
+  const recent=searchRecent(); const favs=searchFavs();
+  return `<div class="search-v62-shell">
+    <section class="search-v62-hero card"><span class="eyebrow">Global Search 2.0</span><h2>Ne aramak istiyorsun?</h2><p class="muted">Ev, araç, kira, MTV, belge, açıklama, kategori veya plaka yaz.</p></section>
+    ${favs.length?`<section class="card search-saved"><h2>Favori Aramalar</h2><div>${favs.map(x=>`<button class="secondary small" onclick="runSavedSearch('${esc(x)}')">⭐ ${esc(x)}</button>`).join('')}</div></section>`:''}
+    ${recent.length?`<section class="card search-saved"><h2>Son Aramalar</h2><div>${recent.map(x=>`<button class="secondary small" onclick="runSavedSearch('${esc(x)}')">${esc(x)}</button>`).join('')}</div></section>`:''}
+  </div>`;
+}
+function doSearch(q,skipSave=false){
+  q=(q||'').trim();
+  if(!q){$('title').textContent='Arama';$('content').innerHTML=renderSearchEmpty(q);return}
+  if(!skipSave)searchSaveRecent(q);
+  $('title').textContent='Arama';
+  const all=searchBuildItems().filter(i=>searchMatch(i,q));
+  const filtered=mhSearchFilter==='all'?all:all.filter(i=>i.group===mhSearchFilter);
+  const groups=['homes','cars','income','expense','documents'];
+  const fav=searchFavs().some(x=>normalizeSearchText(x)===normalizeSearchText(q));
+  const counts={all:all.length}; groups.forEach(g=>counts[g]=all.filter(i=>i.group===g).length);
+  const filterHtml=['all',...groups].map(f=>`<button class="search-filter ${mhSearchFilter===f?'active':''}" onclick="setSearchFilter('${f}')">${f==='all'?'Hepsi':searchGroupTitle(f)} <b>${counts[f]||0}</b></button>`).join('');
+  const grouped=groups.map(g=>{
+    const arr=filtered.filter(i=>i.group===g).slice(0,20);
+    if(!arr.length)return '';
+    return `<section class="search-group-v62"><h3>${searchGroupIcon(g)} ${searchGroupTitle(g)}</h3><div class="search-list-v62">${arr.map(searchResultCard).join('')}</div></section>`;
+  }).join('');
+  $('content').innerHTML=`<div class="search-v62-shell">
+    <section class="search-v62-hero card">
+      <div><span class="eyebrow">Global Search 2.0</span><h2>“${esc(q)}”</h2><p class="muted">${filtered.length} sonuç gösteriliyor · Toplam ${all.length} eşleşme</p></div>
+      <button class="secondary" onclick="searchToggleFav('${esc(q)}')">${fav?'★ Favoriden Çıkar':'☆ Favoriye Al'}</button>
+    </section>
+    <div class="search-filterbar">${filterHtml}</div>
+    ${filtered.length?grouped:'<div class="card empty">Sonuç bulunamadı.</div>'}
+    <section class="card search-saved"><h2>Son Aramalar</h2><div>${searchRecent().map(x=>`<button class="secondary small" onclick="runSavedSearch('${esc(x)}')">${esc(x)}</button>`).join('')||'<p class="muted">Henüz son arama yok.</p>'}</div></section>
+  </div>`;
+}
