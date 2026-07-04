@@ -91,12 +91,6 @@ function dashboard(){
         <div class="ai-action-list v6-ai-list">${ai.map(x=>aiActionItem(x)).join('')}</div>
       </section>
 
-      <section class="quick-strip v6-quick">
-        <button onclick="quickEntry('income')"><b>💰 Gelir</b><small>Kira / tahsilat</small></button>
-        <button onclick="quickEntry('expense')"><b>💸 Gider</b><small>Ev / araç</small></button>
-        <button onclick="quickDoc()"><b>📎 Belge</b><small>Kayıtla bağla</small></button>
-        <button onclick="quickAction()"><b>⚡ Quick Capture</b><small>Tüm işlemler</small></button>
-      </section>
 
       <section class="home-status-grid v6-stats">
         <button class="home-stat clickable" onclick="page('reports')"><span>Bu Ay Gelir</span><b>${fmt(income)}</b><small>Raporu aç</small></button>
@@ -288,8 +282,49 @@ function calendarMonthView(list){
 function calendarLevel(e){if(new Date(e.date)<new Date(today()))return 'danger';if(e.date===today())return 'warning';return 'info'}
 function calendarTimeline(list,compact=false){if(!list.length)return '<div class="empty">Açık veya yaklaşan kayıt yok.</div>';const groups={};list.forEach(e=>{groups[e.date]??=[];groups[e.date].push(e)});return `<div class="timeline">${Object.keys(groups).sort().map(d=>`<div class="day"><h3>${trDate(d)}</h3>${groups[d].map(e=>entryCard(e,!compact)).join('')}</div>`).join('')}</div>`}
 function trDate(d){return new Date(d+'T00:00:00').toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric',weekday:'long'})}
-function reports(){const homeEntries=state.entries.filter(e=>e.home_id),carEntries=state.entries.filter(e=>e.car_id);$('content').innerHTML=`<div class="grid"><div class="kpi">Ev Değeri<b>${fmt(state.homes.reduce((s,h)=>s+Number(h.current_value||0),0))}</b></div><div class="kpi">Araç Değeri<b>${fmt(state.cars.reduce((s,c)=>s+Number(c.current_value||0),0))}</b></div><div class="kpi">Ev Net<b>${fmt(sum(homeEntries,'income')-sum(homeEntries,'expense'))}</b></div><div class="kpi">Araç Maliyeti<b>${fmt(sum(carEntries,'expense'))}</b></div></div><div class="grid2"><div class="card"><h2>Ev Alt Kategori Raporu</h2>${reportTable(homeEntries)}</div><div class="card"><h2>Araç Alt Kategori Raporu</h2>${reportTable(carEntries)}</div></div><div class="card"><h2>Varlık Değerleri</h2>${assetValueTable()}</div>`}
-function reportTable(arr){const rows=group(arr,'category');return rows.length?`<table class="table"><thead><tr><th>Kategori</th><th>Gelir</th><th>Gider</th><th>Net</th></tr></thead><tbody>${rows.map(r=>`<tr><td data-label="Kategori">${esc(r.key)}</td><td data-label="Gelir">${fmt(r.income)}</td><td data-label="Gider">${fmt(r.expense)}</td><td data-label="Net">${fmt(r.income-r.expense)}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Kayıt yok.</p>'}
+function reports(){
+  const homeEntries=state.entries.filter(e=>e.home_id), carEntries=state.entries.filter(e=>e.car_id);
+  const homeValue=state.homes.reduce((sum,h)=>sum+Number(h.current_value||0),0);
+  const carValue=state.cars.reduce((sum,c)=>sum+Number(c.current_value||0),0);
+  const homeIncome=sum(homeEntries,'income'), homeExpense=sum(homeEntries,'expense'), carExpense=sum(carEntries,'expense');
+  const allEntries=[...homeEntries,...carEntries];
+  const monthly=lastMonthsSummary(allEntries,12);
+  $('content').innerHTML=`
+    <div class="reports-v6c1">
+      <div class="grid report-kpis">
+        <div class="kpi">Ev Değeri<b>${fmt(homeValue)}</b><small>${state.homes.length} varlık</small></div>
+        <div class="kpi">Araç Değeri<b>${fmt(carValue)}</b><small>${state.cars.length} araç</small></div>
+        <div class="kpi">Ev Net<b>${fmt(homeIncome-homeExpense)}</b><small>Gelir ${fmt(homeIncome)} · Gider ${fmt(homeExpense)}</small></div>
+        <div class="kpi">Araç Maliyeti<b>${fmt(carExpense)}</b><small>Toplam araç gideri</small></div>
+      </div>
+      <div class="grid2 reports-analytics-grid">
+        <div class="card report-panel"><h2>Son 12 Ay Gelir / Gider</h2>${monthlyBars(monthly)}</div>
+        <div class="card report-panel"><h2>Kategori Dağılımı</h2>${categoryBars(allEntries)}</div>
+      </div>
+      <div class="grid2 reports-table-grid">
+        <div class="card report-panel"><h2>Ev Alt Kategori Raporu</h2><div class="tablewrap">${reportTable(homeEntries)}</div></div>
+        <div class="card report-panel"><h2>Araç Alt Kategori Raporu</h2><div class="tablewrap">${reportTable(carEntries)}</div></div>
+      </div>
+      <div class="card report-panel"><h2>Varlık Değerleri</h2><div class="tablewrap">${assetValueTable()}</div></div>
+    </div>`;
+}
+function reportTable(arr){const rows=group(arr,'category');return rows.length?`<table class="table report-table"><thead><tr><th>Kategori</th><th>Gelir</th><th>Gider</th><th>Net</th></tr></thead><tbody>${rows.map(r=>`<tr><td data-label="Kategori">${esc(r.key)}</td><td data-label="Gelir">${fmt(r.income)}</td><td data-label="Gider">${fmt(r.expense)}</td><td data-label="Net" class="${r.income-r.expense<0?'neg':''}">${fmt(r.income-r.expense)}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Kayıt yok.</p>'}
+function lastMonthsSummary(entries,count=12){
+  const now=new Date();
+  const months=[];
+  for(let i=count-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;months.push({key,label:d.toLocaleDateString('tr-TR',{month:'short'}),income:0,expense:0});}
+  entries.forEach(e=>{const key=String(e.date||'').slice(0,7);const m=months.find(x=>x.key===key);if(m)m[e.type==='income'?'income':'expense']+=Number(e.amount||0);});
+  return months;
+}
+function monthlyBars(months){
+  const max=Math.max(1,...months.map(m=>Math.max(m.income,m.expense)));
+  return `<div class="monthly-bars">${months.map(m=>`<div class="month-row"><span>${m.label}</span><div class="month-lines"><i class="inc" style="width:${Math.round((m.income/max)*100)}%"></i><i class="exp" style="width:${Math.round((m.expense/max)*100)}%"></i></div><b>${fmt(m.income-m.expense)}</b></div>`).join('')}</div><div class="chart-legend"><span><i class="inc-dot"></i>Gelir</span><span><i class="exp-dot"></i>Gider</span></div>`;
+}
+function categoryBars(entries){
+  const rows=group(entries,'category').sort((a,b)=>(b.income+b.expense)-(a.income+a.expense)).slice(0,8);
+  const max=Math.max(1,...rows.map(r=>r.income+r.expense));
+  return rows.length?`<div class="category-bars">${rows.map(r=>{const total=r.income+r.expense;return `<div class="cat-row"><div><b>${esc(r.key)}</b><small>${fmt(total)}</small></div><span><i style="width:${Math.max(4,Math.round((total/max)*100))}%"></i></span></div>`}).join('')}</div>`:'<p class="muted">Kategori verisi yok.</p>';
+}
 function assetValueTable(){const rows=[...state.homes.map(x=>({t:'Ev',...x})),...state.cars.map(x=>({t:'Araç',...x}))];return rows.length?`<table class="table"><thead><tr><th>Tip</th><th>Ad</th><th>Alış Fiyatı</th><th>Güncel Değer</th><th>Fark</th></tr></thead><tbody>${rows.map(r=>`<tr><td data-label="Tip">${r.t}</td><td data-label="Ad">${esc(r.name)}</td><td data-label="Alış">${fmt(r.purchase_price)}</td><td data-label="Güncel">${fmt(r.current_value)}</td><td data-label="Fark">${fmt(Number(r.current_value||0)-Number(r.purchase_price||0))}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Varlık yok.</p>'}
 function group(arr,key){const m={};arr.forEach(e=>{const k=e[key]||'Diğer';m[k]??={key:k,income:0,expense:0,total:0};m[k][e.type]+=Number(e.amount||0);m[k].total+=Number(e.amount||0)});return Object.values(m).sort((a,b)=>b.total-a.total)}
 function definitions(){const labels={home_expense:'Ev Gider Kategorileri',car_expense:'Araç Gider Kategorileri',income:'Gelir Tipleri',status:'Ödeme Durumları',doc_type:'Belge Tipleri'};$('content').innerHTML=`<div class="defgrid">${Object.keys(labels).map(type=>`<div class="card"><div class="row"><h2 style="flex:1">${labels[type]}</h2><button onclick="defForm('${type}')">Ekle</button></div>${defs(type,false).map(d=>`<div class="pill ${d.active?'':'inactive'}"><span>${esc(d.name)} ${d.active?'':'(pasif)'}</span><span><button class="small secondary" onclick="defForm('${type}','${d.id}')">Düzenle</button> <button class="small secondary" onclick="toggleDef('${d.id}',${!d.active})">${d.active?'Pasife Al':'Aktif Et'}</button> <button class="small danger" onclick="deleteDef('${d.id}')">Sil</button></span></div>`).join('')}</div>`).join('')}</div>`}
