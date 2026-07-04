@@ -364,3 +364,107 @@ document.querySelectorAll('.nav[data-page]').forEach(b=>b.onclick=()=>page(b.dat
 $('quick').onclick=quickAction;$('fab').onclick=quickAction;$('themeBtn').onclick=toggleTheme;applyTheme();
 let searchTimer=null;$('globalSearch').addEventListener('input',e=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>doSearch(e.target.value),250)});
 init();
+
+
+/* V6.0 Sprint B - Assets, Documents and Search */
+function assetStats(kind,a){
+  const ent=state.entries.filter(e=>kind==='home'?e.home_id===a.id:e.car_id===a.id);
+  const inc=sum(ent,'income'), ex=sum(ent,'expense');
+  const open=ent.filter(e=>!isClosedStatus(e.status)).length;
+  const docs=(kind==='home'?state.documents.filter(d=>d.home_id===a.id):state.documents.filter(d=>d.car_id===a.id)).length;
+  const overdue=ent.filter(e=>!isClosedStatus(e.status)&&new Date(e.date)<new Date(today())).length;
+  return {ent,inc,ex,open,docs,overdue,net:inc-ex};
+}
+function assetPageHeader(kind){
+  const title=kind==='home'?'Gayrimenkuller':'Araçlar';
+  const addFn=kind==='home'?'homeForm()':'carForm()';
+  const count=kind==='home'?state.homes.length:state.cars.length;
+  const total=(kind==='home'?state.homes:state.cars).reduce((s,a)=>s+Number(a.current_value||0),0);
+  return `<div class="asset-v6-head card"><div><span class="eyebrow">Momentum Asset</span><h2>${title}</h2><p class="muted">${count} kayıt · Toplam değer ${fmt(total)}</p></div><div class="asset-head-actions"><button class="secondary" onclick="quickAction()">Quick Capture</button><button onclick="${addFn}">${kind==='home'?'Ev Ekle':'Araç Ekle'}</button></div></div>`;
+}
+function homes(){
+  $('content').innerHTML=`${assetPageHeader('home')}<div class="asset-toolbar"><input id="assetFilter" placeholder="Ev ara: ad, adres, kiracı..." oninput="filterAssetCards(this.value)"><button class="secondary" onclick="quickEntry('income')">Gelir Ekle</button><button class="secondary" onclick="quickEntry('expense')">Gider Ekle</button></div><div id="assetCards" class="asset-grid-v6">${state.homes.map(h=>assetCard('home',h)).join('')||'<div class="card muted">Ev ekleyerek başlayın.</div>'}</div>`;
+}
+function cars(){
+  $('content').innerHTML=`${assetPageHeader('car')}<div class="asset-toolbar"><input id="assetFilter" placeholder="Araç ara: ad, plaka, not..." oninput="filterAssetCards(this.value)"><button class="secondary" onclick="quickEntry('expense')">Gider Ekle</button><button class="secondary" onclick="quickDoc()">Belge Yükle</button></div><div id="assetCards" class="asset-grid-v6">${state.cars.map(c=>assetCard('car',c)).join('')||'<div class="card muted">Araç ekleyerek başlayın.</div>'}</div>`;
+}
+function filterAssetCards(q){
+  q=(q||'').toLowerCase();
+  document.querySelectorAll('.asset-card-v6').forEach(c=>c.style.display=c.dataset.search.includes(q)?'':'none');
+}
+function assetCard(kind,a){
+  const st=assetStats(kind,a);
+  const subtitle=kind==='home' ? `${esc(a.kind||'Ev')} · ${esc(a.tenant_name||'Kiracı yok')}` : `${esc(a.plate||'Plaka yok')} · ${a.km?Number(a.km).toLocaleString('tr-TR')+' km':'Km yok'}`;
+  const search=JSON.stringify(a).toLowerCase();
+  return `<article class="asset-card-v6" data-search="${esc(search)}">
+    <div class="asset-card-top"><div><span class="asset-icon">${kind==='home'?'🏠':'🚗'}</span><h3>${esc(a.name)}</h3><p>${subtitle}</p></div><span class="badge ${st.overdue?'bad':'ok'}">${st.overdue?st.overdue+' geciken':'Aktif'}</span></div>
+    <div class="asset-metrics-v6"><div><span>Değer</span><b>${fmt(a.current_value)}</b></div><div><span>Gelir</span><b class="pos">${fmt(st.inc)}</b></div><div><span>Gider</span><b class="neg">${fmt(st.ex)}</b></div><div><span>Belge</span><b>${st.docs}</b></div></div>
+    <div class="asset-actions-v6">
+      <button onclick="showAssetDetail('${kind}','${a.id}','overview')">Detay</button>
+      ${kind==='home'?`<button class="secondary" onclick="entryForm('home','${a.id}','income')">Gelir</button>`:''}
+      <button class="secondary" onclick="entryForm('${kind}','${a.id}','expense')">Gider</button>
+      <button class="secondary" onclick="showDocs('${kind}','${a.id}')">Belge</button>
+      <button class="secondary" onclick="${kind}Form('${a.id}')">Düzenle</button>
+    </div>
+  </article>`;
+}
+function showAssetEntries(kind,id){showAssetDetail(kind,id,'entries')}
+function assetTabs(kind,id,tab){
+  return `<div class="tabs-v6"><button class="${tab==='overview'?'active':''}" onclick="showAssetDetail('${kind}','${id}','overview')">Özet</button><button class="${tab==='entries'?'active':''}" onclick="showAssetDetail('${kind}','${id}','entries')">Gelir / Gider</button><button class="${tab==='docs'?'active':''}" onclick="showAssetDetail('${kind}','${id}','docs')">Belgeler</button><button class="${tab==='timeline'?'active':''}" onclick="showAssetDetail('${kind}','${id}','timeline')">Zaman Çizelgesi</button></div>`
+}
+function showAssetDetail(kind,id,tab='overview'){
+  const list=kind==='home'?state.homes:state.cars;
+  const a=list.find(x=>x.id===id); if(!a)return toast('Varlık bulunamadı.');
+  currentPage=kind==='home'?'homes':'cars';
+  document.querySelectorAll('.nav[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===currentPage));
+  $('title').textContent=kind==='home'?'Ev Detayı':'Araç Detayı';
+  const st=assetStats(kind,a);
+  const docs=kind==='home'?state.documents.filter(d=>d.home_id===id):state.documents.filter(d=>d.car_id===id);
+  let body='';
+  if(tab==='overview') body=assetOverview(kind,a,st,docs);
+  if(tab==='entries') body=`<div class="detail-grid"><div class="card"><div class="row"><h2 style="flex:1">Gelirler</h2>${kind==='home'?`<button onclick="entryForm('home','${id}','income')">Gelir Ekle</button>`:''}</div>${entryTable(st.ent.filter(e=>e.type==='income'))}</div><div class="card"><div class="row"><h2 style="flex:1">Giderler</h2><button onclick="entryForm('${kind}','${id}','expense')">Gider Ekle</button></div>${entryTable(st.ent.filter(e=>e.type==='expense'))}</div></div>`;
+  if(tab==='docs') body=`<div class="card"><div class="row"><h2 style="flex:1">Belgeler</h2><button onclick="showDocs('${kind}','${id}')">Belge Yükle</button></div>${docs.map(d=>docRow(d)).join('')||'<div class="empty">Bu varlığa bağlı belge yok.</div>'}</div>`;
+  if(tab==='timeline') body=assetTimeline(st.ent,docs);
+  $('content').innerHTML=`<div class="asset-detail-head card"><button class="secondary" onclick="page('${kind==='home'?'homes':'cars'}')">← Geri</button><div><span class="eyebrow">${kind==='home'?'Gayrimenkul':'Araç'} Detayı</span><h2>${esc(a.name)}</h2><p class="muted">${kind==='home'?esc(a.address||a.kind||''):esc((a.plate||'')+' '+(a.note||''))}</p></div><button class="secondary" onclick="${kind}Form('${id}')">Düzenle</button></div>${assetTabs(kind,id,tab)}${body}`;
+}
+function assetOverview(kind,a,st,docs){
+  return `<div class="detail-grid"><div class="card"><h2>Finans Özeti</h2><div class="asset-metrics-v6 wide"><div><span>Güncel Değer</span><b>${fmt(a.current_value)}</b></div><div><span>Net</span><b class="${st.net>=0?'pos':'neg'}">${fmt(st.net)}</b></div><div><span>Açık Kayıt</span><b>${st.open}</b></div><div><span>Belge</span><b>${docs.length}</b></div></div></div><div class="card"><h2>${kind==='home'?'Kiracı / Ev Bilgisi':'Araç Bilgisi'}</h2>${kind==='home'?`<p><b>Tip:</b> ${esc(a.kind||'-')}</p><p><b>Kiracı:</b> ${esc(a.tenant_name||'-')}</p><p><b>Telefon:</b> ${esc(a.tenant_phone||'-')}</p><p><b>Kira:</b> ${fmt(a.rent_amount)}</p>`:`<p><b>Plaka:</b> ${esc(a.plate||'-')}</p><p><b>Km:</b> ${a.km?Number(a.km).toLocaleString('tr-TR'):'-'}</p><p><b>Alış:</b> ${fmt(a.purchase_price)}</p><p><b>Güncel:</b> ${fmt(a.current_value)}</p>`}</div></div><div class="card"><h2>Son Kayıtlar</h2>${st.ent.slice(0,8).map(e=>entryCard(e,true)).join('')||'<div class="empty">Henüz gelir/gider yok.</div>'}</div>`;
+}
+function assetTimeline(entries,docs){
+  const events=[...entries.map(e=>({date:e.date,html:`${e.type==='income'?'💰':'💸'} <b>${esc(e.category||'Kayıt')}</b><span>${fmt(e.amount)} · ${esc(e.status||'')}</span>`})),...docs.map(d=>({date:(d.created_at||today()).slice(0,10),html:`📄 <b>${esc(d.doc_type||'Belge')}</b><span>${esc(d.file_name||'')}</span>`}))].sort((a,b)=>b.date.localeCompare(a.date));
+  return `<div class="card"><h2>Zaman Çizelgesi</h2><div class="timeline-v6">${events.map(ev=>`<div><time>${esc(ev.date)}</time><p>${ev.html}</p></div>`).join('')||'<div class="empty">Zaman çizelgesi boş.</div>'}</div></div>`;
+}
+function entryTable(list){
+  return list.length?`<div class="tablewrap"><table class="table"><thead><tr><th>Tarih</th><th>Kategori</th><th>Tutar</th><th>Durum</th><th>Belge</th><th>Açıklama</th><th>İşlem</th></tr></thead><tbody>${list.map(e=>{const dc=entryDocs(e.id).length;const done=isClosedStatus(e.status);return `<tr><td data-label="Tarih">${esc(e.date)}</td><td data-label="Kategori">${esc(e.category||'Diğer')}</td><td data-label="Tutar">${fmt(e.amount)}</td><td data-label="Durum"><span class="badge ${statusClass(e.status)}">${esc(e.status)}</span></td><td data-label="Belge">${dc?`📎 ${dc}`:'-'}</td><td data-label="Açıklama">${esc(e.note||'')}</td><td data-label="İşlem"><div class="table-actions">${!done?`<button class="small success" onclick="markEntryDone('${e.id}')">${e.type==='income'?'Alındı Yap':'Ödendi Yap'}</button>`:''}<button class="small secondary" onclick="entryForm('${e.home_id?'home':'car'}','${e.home_id||e.car_id}','${e.type}','${e.id}')">Düzenle</button><button class="small secondary" onclick="duplicateEntry('${e.id}')">Kopyala</button><button class="small secondary" onclick="showDocs('${e.home_id?'home':'car'}','${e.home_id||e.car_id}','${e.id}')">Belge</button><button class="small danger" onclick="delEntry('${e.id}')">Sil</button></div></td></tr>`}).join('')}</tbody></table></div>`:'<p class="muted">Kayıt yok.</p>';
+}
+async function duplicateEntry(id){
+  const e=state.entries.find(x=>x.id===id); if(!e)return toast('Kayıt bulunamadı.');
+  const row={user_id:user.id,home_id:e.home_id,car_id:e.car_id,type:e.type,category:e.category,amount:e.amount,date:today(),repeat_type:e.repeat_type,status:'Bekleniyor',note:(e.note?e.note+' · ':'')+'Kopya kayıt'};
+  const {error}=await sb.from('entries').insert(row); if(error)return toast(error.message); toast('Kayıt kopyalandı.'); await load();
+}
+function documents(){
+  const docs=state.documents;
+  const pdf=docs.filter(d=>(d.file_name||'').toLowerCase().endsWith('.pdf')).length;
+  $('content').innerHTML=`<div class="docs-v6-head card"><div><span class="eyebrow">Momentum Documents</span><h2>Belge Merkezi</h2><p class="muted">${docs.length} belge · ${pdf} PDF · Kayıt ilişkileri görünür.</p></div><button onclick="quickDoc()">Belge Yükle</button></div><div class="doc-grid-v6">${docs.map(d=>docRow(d)).join('')||'<div class="card empty">Henüz belge yok.</div>'}</div>`;
+}
+function docRow(d){
+  const asset=d.home_id?state.homes.find(h=>h.id===d.home_id):state.cars.find(c=>c.id===d.car_id);
+  const e=state.entries.find(x=>x.id===d.entry_id);
+  const kind=d.home_id?'home':'car'; const id=d.home_id||d.car_id;
+  return `<article class="doc-card-v6"><div><span class="doc-type">${esc(d.doc_type||'Belge')}</span><h3>${esc(d.file_name||'Dosya')}</h3><p>${esc(asset?.name||'Varlık yok')}</p><small>${e?esc(entryLabel(e)):'Genel belge'} · ${esc((d.created_at||'').slice(0,10))}</small></div><div class="doc-actions-v6"><button class="small secondary" onclick="showDocDetail('${d.id}')">Detay</button><button class="small secondary" onclick="openDoc('${d.file_path}')">Aç</button>${id?`<button class="small secondary" onclick="showAssetDetail('${kind}','${id}','docs')">Varlığa Git</button>`:''}<button class="small danger" onclick="deleteDoc('${d.id}','${d.file_path}')">Sil</button></div></article>`;
+}
+function showDocDetail(id){
+  const d=state.documents.find(x=>x.id===id); if(!d)return toast('Belge bulunamadı.');
+  const asset=d.home_id?state.homes.find(h=>h.id===d.home_id):state.cars.find(c=>c.id===d.car_id);
+  const e=state.entries.find(x=>x.id===d.entry_id);
+  openModal(`<div class="doc-detail-v6"><span class="eyebrow">Belge Detayı</span><h2>${esc(d.doc_type||'Belge')}</h2><p class="muted">${esc(d.file_name||'')}</p><div class="asset-metrics-v6 wide"><div><span>Varlık</span><b>${esc(asset?.name||'-')}</b></div><div><span>İlişkili Kayıt</span><b>${e?esc(e.category||'Kayıt'):'Genel'}</b></div><div><span>Tarih</span><b>${esc((d.created_at||'').slice(0,10))}</b></div></div><div class="row"><button onclick="openDoc('${d.file_path}')">Belgeyi Aç</button>${asset?`<button class="secondary" onclick="closeModal();showAssetDetail('${d.home_id?'home':'car'}','${d.home_id||d.car_id}','docs')">Varlığa Git</button>`:''}</div></div>`);
+}
+function doSearch(q){
+  q=(q||'').toLowerCase().trim(); if(!q)return page(currentPage);
+  const homes=state.homes.filter(h=>JSON.stringify(h).toLowerCase().includes(q));
+  const cars=state.cars.filter(c=>JSON.stringify(c).toLowerCase().includes(q));
+  const entries=state.entries.filter(e=>JSON.stringify(e).toLowerCase().includes(q));
+  const docs=state.documents.filter(d=>JSON.stringify(d).toLowerCase().includes(q));
+  $('title').textContent='Arama';
+  $('content').innerHTML=`<div class="search-v6-head card"><div><span class="eyebrow">Global Search</span><h2>Arama Sonuçları</h2><p class="muted">“${esc(q)}” için ${homes.length+cars.length+entries.length+docs.length} sonuç bulundu.</p></div></div><div class="detail-grid"><div class="card"><h2>Varlıklar</h2>${homes.map(h=>`<div class="item"><b>🏠 ${esc(h.name)}</b><p class="muted">${esc(h.address||'')}</p><button class="small secondary" onclick="showAssetDetail('home','${h.id}','overview')">Detay</button></div>`).join('')}${cars.map(c=>`<div class="item"><b>🚗 ${esc(c.name)}</b><p class="muted">${esc(c.plate||'')}</p><button class="small secondary" onclick="showAssetDetail('car','${c.id}','overview')">Detay</button></div>`).join('')||''}</div><div class="card"><h2>Gelir / Gider</h2>${entries.map(e=>entryCard(e,true)).join('')||'<div class="empty">Kayıt yok.</div>'}</div></div><div class="card"><h2>Belgeler</h2>${docs.map(d=>docRow(d)).join('')||'<div class="empty">Belge yok.</div>'}</div>`;
+}
