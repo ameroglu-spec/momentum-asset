@@ -2,6 +2,7 @@ const SUPABASE_URL='https://ihcpuytxrgmercbvblfy.supabase.co';
 const SUPABASE_KEY='sb_publishable_ILKwhlgiUJbBKtf4lMVZzA_u6RjjP79';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let user=null,currentPage='dashboard';
+let calendarMonth=new Date().toISOString().slice(0,7);
 let theme=localStorage.getItem('ma_theme')||'dark';
 let state={homes:[],cars:[],entries:[],definitions:[],documents:[]};
 const $=id=>document.getElementById(id);
@@ -259,20 +260,54 @@ function notifications(){
   $('content').innerHTML=`<div class="card notifications-head"><div><span class="eyebrow">Momentum Hub</span><h2>Bildirim Merkezi</h2><p class="muted">Geciken, yaklaşan ve bugün dikkat edilmesi gereken kayıtlar.</p></div><button onclick="quickAction()">+ Hızlı İşlem</button></div><div class="notification-stats"><div><span>Geciken</span><b class="neg">${overdue}</b></div><div><span>7 Gün</span><b>${week}</b></div><div><span>30 Gün</span><b>${month}</b></div></div><div class="card"><h2>Uyarılar</h2><div class="notification-list">${notes.map(notificationItem).join('')}</div></div>`;
 }
 function calendar(){
-  const all=getCalendarItems(365);
-  $('content').innerHTML=`<div class="card calendar-head"><div><span class="eyebrow">Finans Takvimi</span><h2>Takvim 2.0</h2><p class="muted">Geciken, bugün ve yaklaşan kayıtları renkli görünümle takip et.</p></div><button onclick="quickAction()">+ Hızlı İşlem</button></div>${calendarTabs()}<div class="calendar-layout"><div class="calendar-month">${calendarMonthView(all)}</div><div class="calendar-agenda card"><h2>Sıradaki İşler</h2>${calendarTimeline(all.slice(0,20),false)}</div></div>`;
+  const selected=calendarMonth||new Date().toISOString().slice(0,7);
+  const list=getCalendarMonthItems(selected);
+  $('content').innerHTML=`
+    <div class="card calendar-head stable-calendar-head">
+      <div>
+        <span class="eyebrow">Finans Takvimi</span>
+        <h2>Aylık Takvim</h2>
+        <p class="muted">Finans kayıtlarını seçtiğin aya göre takip et.</p>
+      </div>
+      <button onclick="quickAction()">+ Hızlı İşlem</button>
+    </div>
+    <div class="calendar-stable-toolbar card">
+      <button class="secondary" onclick="shiftCalendarMonth(-1)">◀</button>
+      <input id="calendarMonthPicker" type="month" value="${esc(selected)}" onchange="setCalendarMonth(this.value)">
+      <button class="secondary" onclick="shiftCalendarMonth(1)">▶</button>
+      <button class="secondary" onclick="setCalendarMonth(new Date().toISOString().slice(0,7))">Bu Ay</button>
+    </div>
+    ${calendarMonthlySummary(list,selected)}
+    <div class="calendar-layout calendar-layout-stable">
+      <div class="calendar-month card">${calendarMonthView(list,selected)}</div>
+      <div class="calendar-agenda card"><h2>${calendarMonthLabel(selected)} Finans Kayıtları</h2>${calendarTimeline(list,false)}</div>
+    </div>`;
 }
-function calendarTabs(){return `<div class="calendar-tabs"><button class="active" onclick="filterCalendar('month')">Ay</button><button onclick="filterCalendar('week')">Hafta</button><button onclick="filterCalendar('day')">Gün</button></div>`}
-function filterCalendar(mode){toast(`${mode==='month'?'Ay':mode==='week'?'Hafta':'Gün'} görünümü aktif. Detaylı filtre V5.2.3'te geliştirilecek.`)}
+function setCalendarMonth(value){calendarMonth=value||new Date().toISOString().slice(0,7);calendar()}
+function shiftCalendarMonth(offset){const [y,m]=(calendarMonth||new Date().toISOString().slice(0,7)).split('-').map(Number);const d=new Date(y,m-1+offset,1);setCalendarMonth(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}
+function calendarMonthLabel(key){const [y,m]=key.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('tr-TR',{month:'long',year:'numeric'})}
+function getCalendarMonthItems(key){return state.entries.filter(e=>String(e.date||'').slice(0,7)===key).sort((a,b)=>a.date.localeCompare(b.date));}
+function calendarMonthlySummary(list,key){
+  const income=sum(list,'income'), expense=sum(list,'expense');
+  const open=list.filter(e=>!isClosedStatus(e.status)).length;
+  const overdue=list.filter(e=>!isClosedStatus(e.status)&&new Date(e.date)<new Date(today())).length;
+  return `<div class="calendar-summary-grid">
+    <div class="kpi"><span>Ay</span><b>${esc(calendarMonthLabel(key))}</b></div>
+    <div class="kpi"><span>Gelir</span><b class="pos">${fmt(income)}</b></div>
+    <div class="kpi"><span>Gider</span><b class="neg">${fmt(expense)}</b></div>
+    <div class="kpi"><span>Net</span><b class="${income-expense>=0?'pos':'neg'}">${fmt(income-expense)}</b></div>
+    <div class="kpi"><span>Açık / Geciken</span><b>${open} / <span class="neg">${overdue}</span></b></div>
+  </div>`
+}
 function getCalendarItems(days=365){
   const now=new Date(today());const max=new Date(now);max.setDate(max.getDate()+days);
   return state.entries.filter(e=>!isClosedStatus(e.status)&&new Date(e.date)<=max).sort((a,b)=>a.date.localeCompare(b.date));
 }
-function calendarMonthView(list){
-  const now=new Date();const y=now.getFullYear(),m=now.getMonth();const first=new Date(y,m,1);const last=new Date(y,m+1,0);let html='';
+function calendarMonthView(list,key=calendarMonth||new Date().toISOString().slice(0,7)){
+  const [y,m0]=key.split('-').map(Number);const m=m0-1;const first=new Date(y,m,1);const last=new Date(y,m+1,0);let html='';
   const start=(first.getDay()+6)%7;for(let i=0;i<start;i++)html+='<div class="cal-cell empty-cell"></div>';
   for(let d=1;d<=last.getDate();d++){
-    const iso=new Date(y,m,d).toISOString().slice(0,10);
+    const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const items=list.filter(e=>e.date===iso);
     const cls=iso===today()?'today-cell':'';
     html+=`<div class="cal-cell ${cls}"><b>${d}</b>${items.slice(0,3).map(e=>`<span class="cal-dot ${calendarLevel(e)}" title="${esc(entryLabel(e))}">${esc(e.category||'Kayıt')}</span>`).join('')}${items.length>3?`<small>+${items.length-3}</small>`:''}</div>`;
