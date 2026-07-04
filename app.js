@@ -606,3 +606,77 @@ function doSearch(q,skipSave=false){
     <section class="card search-saved"><h2>Son Aramalar</h2><div>${searchRecent().map(x=>`<button class="secondary small" onclick="runSavedSearch('${esc(x)}')">${esc(x)}</button>`).join('')||'<p class="muted">Henüz son arama yok.</p>'}</div></section>
   </div>`;
 }
+
+/* V6 Sprint C3 - Documents 3.0 */
+var mhDocFilter='all';
+var mhDocQuery='';
+function docMetaStore(){try{return JSON.parse(localStorage.getItem('mh_doc_meta')||'{}')}catch(e){return {}}}
+function saveDocMetaStore(v){localStorage.setItem('mh_doc_meta',JSON.stringify(v||{}))}
+function docMeta(id){return docMetaStore()[id]||{tags:[],favorite:false}}
+function setDocMeta(id,patch){const s=docMetaStore();s[id]=Object.assign({tags:[],favorite:false},s[id]||{},patch||{});saveDocMetaStore(s)}
+function docFileKind(d){const n=(d.file_name||'').toLowerCase();if(n.endsWith('.pdf'))return 'pdf';if(/\.(png|jpg|jpeg|webp|gif)$/i.test(n))return 'image';return 'file'}
+function docAsset(d){return d.home_id?state.homes.find(h=>h.id===d.home_id):state.cars.find(c=>c.id===d.car_id)}
+function docEntry(d){return state.entries.find(x=>x.id===d.entry_id)}
+function documents(){
+  const all=state.documents||[];
+  const q=normalizeSearchText(mhDocQuery||'');
+  const counts={all:all.length,pdf:all.filter(d=>docFileKind(d)==='pdf').length,image:all.filter(d=>docFileKind(d)==='image').length,fav:all.filter(d=>docMeta(d.id).favorite).length,linked:all.filter(d=>d.entry_id||d.home_id||d.car_id).length};
+  let docs=all.filter(d=>{
+    const m=docMeta(d.id); const kind=docFileKind(d); const asset=docAsset(d); const e=docEntry(d);
+    const filterOk=mhDocFilter==='all'||(mhDocFilter==='fav'?m.favorite:(mhDocFilter==='linked'?(d.entry_id||d.home_id||d.car_id):kind===mhDocFilter));
+    const text=normalizeSearchText([d.doc_type,d.file_name,asset?.name,asset?.plate,e?entryLabel(e):'',...(m.tags||[])].join(' '));
+    return filterOk && (!q || text.includes(q));
+  });
+  $('content').innerHTML=`
+    <section class="docs-c3-shell">
+      <div class="docs-c3-hero card">
+        <div><span class="eyebrow">Documents 3.0</span><h2>Belge Merkezi</h2><p class="muted">Belge önizleme, etiket, favori ve ilişkili kayıt görünümü.</p></div>
+        <button onclick="quickDoc()">Belge Yükle</button>
+      </div>
+      <div class="docs-c3-kpis grid4">
+        <div class="kpi"><span>Toplam</span><b>${counts.all}</b></div>
+        <div class="kpi"><span>PDF</span><b>${counts.pdf}</b></div>
+        <div class="kpi"><span>Resim</span><b>${counts.image}</b></div>
+        <div class="kpi"><span>Favori</span><b>${counts.fav}</b></div>
+      </div>
+      <div class="card docs-c3-toolbar">
+        <input value="${esc(mhDocQuery)}" oninput="mhDocQuery=this.value;documents()" placeholder="Belge ara: DASK, sigorta, fatura, plaka...">
+        <div class="doc-filter-row">
+          ${docFilterButton('all','Hepsi',counts.all)}${docFilterButton('pdf','PDF',counts.pdf)}${docFilterButton('image','Resim',counts.image)}${docFilterButton('linked','İlişkili',counts.linked)}${docFilterButton('fav','Favori',counts.fav)}
+        </div>
+      </div>
+      <div class="doc-grid-c3">${docs.map(d=>docRow(d)).join('')||'<div class="card empty">Belge bulunamadı.</div>'}</div>
+    </section>`;
+}
+function docFilterButton(key,label,count){return `<button class="search-filter ${mhDocFilter===key?'active':''}" onclick="mhDocFilter='${key}';documents()">${label} <b>${count}</b></button>`}
+function docRow(d){
+  const asset=docAsset(d); const e=docEntry(d); const kind=d.home_id?'home':'car'; const id=d.home_id||d.car_id; const m=docMeta(d.id); const fileKind=docFileKind(d);
+  const icon=fileKind==='pdf'?'📕':fileKind==='image'?'🖼️':'📄';
+  return `<article class="doc-card-c3 ${m.favorite?'favorite':''}">
+    <div class="doc-preview-icon">${icon}</div>
+    <div class="doc-card-main"><div class="doc-card-topline"><span class="doc-type">${esc(d.doc_type||'Belge')}</span><button class="icon-btn ${m.favorite?'starred':''}" onclick="toggleDocFavorite('${d.id}')">★</button></div><h3>${esc(d.file_name||'Dosya')}</h3><p>${esc(asset?.name||'Varlık yok')}</p><small>${e?esc(entryLabel(e)):'Genel belge'} · ${esc((d.created_at||'').slice(0,10))}</small>${renderDocTags(d.id)}</div>
+    <div class="doc-actions-v6"><button class="small secondary" onclick="showDocDetail('${d.id}')">Detay</button><button class="small secondary" onclick="showDocPreview('${d.id}')">Önizle</button><button class="small secondary" onclick="openDoc('${d.file_path}')">Aç</button>${id?`<button class="small secondary" onclick="showAssetDetail('${kind}','${id}','docs')">Varlığa Git</button>`:''}<button class="small danger" onclick="deleteDoc('${d.id}','${d.file_path}')">Sil</button></div>
+  </article>`;
+}
+function renderDocTags(id){const tags=docMeta(id).tags||[];return tags.length?`<div class="doc-tags">${tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:'<div class="doc-tags muted-mini">Etiket yok</div>'}
+function toggleDocFavorite(id){const m=docMeta(id);setDocMeta(id,{favorite:!m.favorite});documents();toast(!m.favorite?'Favorilere eklendi.':'Favorilerden çıkarıldı.')}
+function addDocTag(id){const input=$('docTagInput');const tag=(input?.value||'').trim();if(!tag)return;const m=docMeta(id);const tags=[...new Set([...(m.tags||[]),tag])];setDocMeta(id,{tags});showDocDetail(id)}
+function removeDocTag(id,tag){const m=docMeta(id);setDocMeta(id,{tags:(m.tags||[]).filter(t=>t!==tag)});showDocDetail(id)}
+async function docSignedUrl(d){const {data,error}=await sb.storage.from('asset-documents').createSignedUrl(d.file_path,120);if(error){toast(error.message);return null}return data.signedUrl}
+async function showDocPreview(id){
+  const d=state.documents.find(x=>x.id===id); if(!d)return toast('Belge bulunamadı.');
+  const url=await docSignedUrl(d); if(!url)return;
+  const kind=docFileKind(d);
+  const preview=kind==='image'?`<img class="doc-preview-media" src="${url}" alt="${esc(d.file_name||'Belge')}">`:kind==='pdf'?`<iframe class="doc-preview-frame" src="${url}"></iframe>`:`<div class="empty">Bu dosya tipi için önizleme yok.<br><button onclick="openDoc('${d.file_path}')">Belgeyi Aç</button></div>`;
+  openModal(`<div class="doc-preview-modal"><div class="row"><div style="flex:1"><span class="eyebrow">Önizleme</span><h2>${esc(d.file_name||'Belge')}</h2></div><button class="secondary" onclick="openDoc('${d.file_path}')">Yeni Sekmede Aç</button></div>${preview}</div>`);
+}
+function showDocDetail(id){
+  const d=state.documents.find(x=>x.id===id); if(!d)return toast('Belge bulunamadı.');
+  const asset=docAsset(d); const e=docEntry(d); const m=docMeta(id); const tags=m.tags||[]; const kind=d.home_id?'home':'car';
+  openModal(`<div class="doc-detail-v6 doc-detail-c3"><span class="eyebrow">Belge Detayı</span><h2>${esc(d.doc_type||'Belge')}</h2><p class="muted">${esc(d.file_name||'')}</p>
+    <div class="asset-metrics-v6 wide"><div><span>Varlık</span><b>${esc(asset?.name||'-')}</b></div><div><span>İlişkili Kayıt</span><b>${e?esc(entryLabel(e)):'Genel'}</b></div><div><span>Yüklenme</span><b>${esc((d.created_at||'').slice(0,10))}</b></div></div>
+    <div class="card inner-card"><h3>Etiketler</h3><div class="doc-tags detail-tags">${tags.map(t=>`<span>${esc(t)} <button onclick="removeDocTag('${id}','${esc(t)}')">×</button></span>`).join('')||'<small class="muted">Henüz etiket yok.</small>'}</div><div class="row"><input id="docTagInput" placeholder="Etiket ekle: Sigorta, Vergi, Kira..." onkeydown="if(event.key==='Enter')addDocTag('${id}')"><button onclick="addDocTag('${id}')">Ekle</button></div></div>
+    <div class="card inner-card"><h3>İlişkili Kayıt</h3>${e?entryCard(e,true):'<p class="muted">Bu belge belirli bir gelir/gider kaydına bağlı değil.</p>'}</div>
+    <div class="row"><button onclick="showDocPreview('${id}')">Önizle</button><button class="secondary" onclick="openDoc('${d.file_path}')">Belgeyi Aç</button>${asset?`<button class="secondary" onclick="closeModal();showAssetDetail('${kind}','${d.home_id||d.car_id}','docs')">Varlığa Git</button>`:''}</div>
+  </div>`);
+}
