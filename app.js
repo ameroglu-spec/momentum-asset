@@ -52,83 +52,115 @@ function dashboard(){
   const y=now.getFullYear(),m=now.getMonth();
   const month=state.entries.filter(e=>new Date(e.date).getMonth()==m&&new Date(e.date).getFullYear()==y);
   const income=sum(month,'income'),exp=sum(month,'expense');
-  const upcoming=getUpcoming();
-  const overdue=state.entries.filter(e=>!['Ödendi','Alındı','İptal'].includes(e.status)&&new Date(e.date)<new Date(today()));
+  const upcoming=getUpcoming(30);
+  const overdue=getOverdue();
+  const todayOpen=state.entries.filter(e=>!isClosedStatus(e.status)&&e.date===today());
   const recent=[...state.entries].slice(0,5);
   const weekday=now.toLocaleDateString('tr-TR',{weekday:'long'});
   const dateText=now.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
   const hour=now.getHours();
   const greeting=hour<12?'Günaydın':(hour<18?'İyi günler':'İyi akşamlar');
-  const ai=homeAiBrief(income,exp,upcoming,overdue);
+  const ai=homeAiBrief(income,exp,upcoming,overdue,todayOpen);
+  const focus=focusScore(income,exp,upcoming,overdue,todayOpen);
+  const next3=upcoming.slice(0,3);
   $('content').innerHTML=`
-    <div class="home-shell v511">
-      <section class="home-hero v511-hero">
+    <div class="home-shell v6-home">
+      <section class="home-hero v6-hero">
         <div>
-          <span class="eyebrow">Momentum Hub</span>
+          <span class="eyebrow">Momentum Hub · Asset Module</span>
           <h2>Bugün</h2>
           <p>${esc(greeting)} Ali Bey · ${esc(weekday)} · ${esc(dateText)}</p>
         </div>
-        <div class="home-slogan">Know Today.<br>Plan Tomorrow.</div>
+        <div class="focus-score ${focus.level}">
+          <span>Günlük Odak</span>
+          <b>${focus.score}</b>
+          <small>${esc(focus.text)}</small>
+        </div>
       </section>
 
-      <section class="ai-focus-card">
+      <section class="ai-focus-card v6-ai">
         <div class="ai-focus-head">
           <div class="ai-orb">🤖</div>
           <div>
             <span class="eyebrow">Momentum AI</span>
-            <h3>Bugün dikkat etmen gerekenler</h3>
+            <h3>Bugün için öncelik sırası</h3>
+            <p class="muted">Kritik kayıtlar, yaklaşan işler ve finans durumuna göre oluşturuldu.</p>
           </div>
+          <button class="small secondary" onclick="showAiBrief()">AI Özeti Aç</button>
         </div>
-        <div class="ai-action-list">${ai.map(x=>aiActionItem(x)).join('')}</div>
+        <div class="ai-action-list v6-ai-list">${ai.map(x=>aiActionItem(x)).join('')}</div>
       </section>
 
-      <section class="quick-strip v521-quick">
-        <button onclick="quickEntry('income')"><b>💰 Gelir</b><small>3 sn kayıt</small></button>
+      <section class="quick-strip v6-quick">
+        <button onclick="quickEntry('income')"><b>💰 Gelir</b><small>Kira / tahsilat</small></button>
         <button onclick="quickEntry('expense')"><b>💸 Gider</b><small>Ev / araç</small></button>
-        <button onclick="quickDoc()"><b>📎 Belge</b><small>Dosya bağla</small></button>
-        <button onclick="quickAction()"><b>⚡ İşlem Merkezi</b><small>Tüm kısayollar</small></button>
+        <button onclick="quickDoc()"><b>📎 Belge</b><small>Kayıtla bağla</small></button>
+        <button onclick="quickAction()"><b>⚡ Quick Capture</b><small>Tüm işlemler</small></button>
       </section>
 
-      <section class="home-status-grid v511-stats">
-        <div class="home-stat"><span>Bu Ay Gelir</span><b>${fmt(income)}</b></div>
-        <div class="home-stat"><span>Bu Ay Gider</span><b>${fmt(exp)}</b></div>
-        <div class="home-stat"><span>Net Durum</span><b class="${income-exp>=0?'pos':'neg'}">${fmt(income-exp)}</b></div>
-        <div class="home-stat"><span>Yaklaşan</span><b>${upcoming.length}</b></div>
+      <section class="home-status-grid v6-stats">
+        <button class="home-stat clickable" onclick="page('reports')"><span>Bu Ay Gelir</span><b>${fmt(income)}</b><small>Raporu aç</small></button>
+        <button class="home-stat clickable" onclick="page('reports')"><span>Bu Ay Gider</span><b>${fmt(exp)}</b><small>Detayları gör</small></button>
+        <button class="home-stat clickable" onclick="page('reports')"><span>Net Durum</span><b class="${income-exp>=0?'pos':'neg'}">${fmt(income-exp)}</b><small>${income-exp>=0?'Pozitif':'Kontrol et'}</small></button>
+        <button class="home-stat clickable" onclick="page('notifications')"><span>Aktif Uyarı</span><b>${overdue.length+upcoming.length}</b><small>Bildirimleri aç</small></button>
       </section>
 
-      <section class="home-grid-main lower">
+      <section class="home-grid-main lower v6-home-grid">
+        <div class="home-card priority-card">
+          <div class="home-card-head"><span>🎯</span><div><b>Bugünün Öncelikleri</b><small>En fazla 5 aksiyon</small></div></div>
+          ${todayPriorityList(overdue,todayOpen,upcoming)}
+        </div>
         <div class="home-card">
           <div class="home-card-head"><span>📅</span><div><b>Yaklaşan İşler</b><small>Önümüzdeki 30 gün</small></div></div>
           ${upcoming.length?`<div class="upcoming-list">${upcoming.slice(0,7).map(e=>homeUpcomingRow(e)).join('')}</div>`:'<div class="empty compact">Önümüzdeki 30 gün için açık kayıt yok.</div>'}
+          ${next3.length?`<button class="secondary full" onclick="page('calendar')">Takvime Git</button>`:''}
+        </div>
+      </section>
+
+      <section class="home-grid-main lower v6-home-grid">
+        <div class="home-card today-decision">
+          <div class="home-card-head"><span>📊</span><div><b>Bugünkü Durum</b><small>Karar özeti</small></div></div>
+          <div class="today-summary v6-summary">
+            <div><span>Toplam Varlık</span><b>${fmt(assetValue())}</b></div>
+            <div><span>Ev / Araç</span><b>${state.homes.length} / ${state.cars.length}</b></div>
+            <div><span>Geciken</span><b class="${overdue.length?'neg':''}">${overdue.length}</b></div>
+            <div><span>Bugün Açık</span><b>${todayOpen.length}</b></div>
+          </div>
         </div>
         <div class="home-card">
           <div class="home-card-head"><span>📰</span><div><b>Son Hareketler</b><small>En son 5 kayıt</small></div></div>
           ${recent.length?recent.map(e=>homeRecentRow(e)).join(''):'<div class="empty compact">Henüz hareket yok.</div>'}
         </div>
       </section>
-
-      <section class="home-card today-decision">
-        <div class="home-card-head"><span>📊</span><div><b>Bugünkü Durum</b><small>Karar özeti</small></div></div>
-        <div class="today-summary v511-summary">
-          <div><span>Toplam Varlık</span><b>${fmt(assetValue())}</b></div>
-          <div><span>Ev / Araç</span><b>${state.homes.length} / ${state.cars.length}</b></div>
-          <div><span>Geciken Kayıt</span><b class="${overdue.length?'neg':''}">${overdue.length}</b></div>
-        </div>
-      </section>
     </div>`
 }
-function homeAiBrief(income,exp,upcoming,overdue){
+function focusScore(income,exp,upcoming,overdue,todayOpen){
+  let score=100;
+  score-=Math.min(overdue.length*18,54);
+  score-=Math.min(todayOpen.length*8,24);
+  score-=Math.min(upcoming.filter(e=>daysUntil(e.date)<=7).length*7,21);
+  if(exp>income&&income>0)score-=12;
+  score=Math.max(0,Math.min(100,score));
+  const level=score>=75?'good':(score>=45?'warn':'bad');
+  const text=level==='good'?'Kontrol sende':(level==='warn'?'Bugün takip gerekli':'Önceliklendirme şart');
+  return {score,level,text};
+}
+function homeAiBrief(income,exp,upcoming,overdue,todayOpen){
   const tips=[];
   if(overdue.length) tips.push({
     level:'danger',icon:'⚠️',title:`${overdue.length} geciken kayıt var`,
-    detail:'Önce bu kayıtları kontrol et.',action:'Gecikenleri Aç',fn:'showOverdueRecords()'
+    detail:'Önce geciken tahsilat ve ödemeleri kapat.',action:'Gecikenleri Aç',fn:'showOverdueRecords()'
+  });
+  if(todayOpen.length) tips.push({
+    level:'warning',icon:'📌',title:`Bugün açık ${todayOpen.length} işlem var`,
+    detail:'Bugünkü kayıtları kontrol edip durumu güncelle.',action:'Bugünü Aç',fn:'showTodayRecords()'
   });
   if(upcoming.length){
     const first=upcoming[0];
     const d=daysUntil(first.date);
     tips.push({
-      level:d<=7?'warning':'info',icon:'📅',title:`${esc(first.category||'Yaklaşan kayıt')}`,
-      detail:`${d===0?'Bugün':d+' gün sonra'} · ${esc(first.date)}`,action:'Takvime Git',fn:"page('calendar')"
+      level:d<=7?'warning':'info',icon:'📅',title:`Sıradaki iş: ${esc(first.category||'Yaklaşan kayıt')}`,
+      detail:`${d===0?'Bugün':d+' gün sonra'} · ${esc(first.date)} · ${fmt(first.amount)}`,action:'Takvime Git',fn:"page('calendar')"
     });
   }
   const net=income-exp;
@@ -139,9 +171,10 @@ function homeAiBrief(income,exp,upcoming,overdue){
   const carExp=state.entries.filter(e=>e.car_id&&e.type==='expense').reduce((s,e)=>s+Number(e.amount||0),0);
   const homeExp=state.entries.filter(e=>e.home_id&&e.type==='expense').reduce((s,e)=>s+Number(e.amount||0),0);
   if(carExp||homeExp){
+    const label=carExp>homeExp?'Araç giderleri daha yüksek':'Ev giderleri daha yüksek';
     tips.push({
-      level:'info',icon:'📌',title:'Gider dağılımı hazır',
-      detail:`Araç ${fmt(carExp)} · Ev ${fmt(homeExp)}`,action:'Detayları Aç',fn:"page('reports')"
+      level:'info',icon:'📌',title:label,
+      detail:`Araç ${fmt(carExp)} · Ev ${fmt(homeExp)}`,action:'Dağılımı Aç',fn:"page('reports')"
     });
   }else if(!state.homes.length&&!state.cars.length){
     tips.push({
@@ -149,7 +182,7 @@ function homeAiBrief(income,exp,upcoming,overdue){
       detail:'İlk ev veya aracını ekleyerek Hub’ı başlat.',action:'Varlık Ekle',fn:'quickAction()'
     });
   }
-  return tips.slice(0,4);
+  return tips.slice(0,5);
 }
 function aiActionItem(x){
   return `<div class="ai-action-item ${x.level}">
@@ -164,16 +197,40 @@ function daysUntil(d){
   return Math.round((b-a)/86400000);
 }
 function showOverdueRecords(){
-  const overdue=state.entries.filter(e=>!['Ödendi','Alındı','İptal'].includes(e.status)&&new Date(e.date)<new Date(today()))
+  const overdue=state.entries.filter(e=>!isClosedStatus(e.status)&&new Date(e.date)<new Date(today()))
     .sort((a,b)=>new Date(a.date)-new Date(b.date));
   if(!overdue.length){toast('Geciken kayıt yok.');return}
   openModal(`<h2>Geciken Kayıtlar</h2><p class="muted">Önce bu kayıtları kontrol et. Düzenle, belge ekle veya ödeme durumunu güncelle.</p>${entryTable(overdue)}`);
+}
+function showTodayRecords(){
+  const rows=state.entries.filter(e=>!isClosedStatus(e.status)&&e.date===today()).sort((a,b)=>(a.category||'').localeCompare(b.category||''));
+  if(!rows.length){toast('Bugün açık kayıt yok.');return}
+  openModal(`<h2>Bugünkü Açık Kayıtlar</h2><p class="muted">Bugün tarihli açık ödeme ve tahsilat kayıtları.</p>${entryTable(rows)}`);
+}
+function showAiBrief(){
+  const overdue=getOverdue();
+  const upcoming=getUpcoming(30);
+  const todayOpen=state.entries.filter(e=>!isClosedStatus(e.status)&&e.date===today());
+  const now=new Date();
+  const month=state.entries.filter(e=>new Date(e.date).getMonth()===now.getMonth()&&new Date(e.date).getFullYear()===now.getFullYear());
+  const income=sum(month,'income'), exp=sum(month,'expense');
+  const ai=homeAiBrief(income,exp,upcoming,overdue,todayOpen);
+  openModal(`<div class="ai-brief-modal"><span class="eyebrow">Momentum AI</span><h2>Bugünün AI Özeti</h2><p class="muted">Bu özet mevcut kayıtlarına göre otomatik oluşturulur. Gerçek LLM entegrasyonu Faz 2'de bağlanacak.</p><div class="ai-action-list v6-ai-list">${ai.map(aiActionItem).join('')}</div></div>`);
+}
+function todayPriorityList(overdue,todayOpen,upcoming){
+  const items=[];
+  overdue.slice(0,2).forEach(e=>items.push({icon:'⚠️',title:e.category||'Geciken kayıt',detail:entryLabel(e),fn:`entryForm('${e.home_id?'home':'car'}','${e.home_id||e.car_id}','${e.type}','${e.id}')`,action:'Aç'}));
+  todayOpen.slice(0,2).forEach(e=>items.push({icon:'📌',title:e.category||'Bugünkü kayıt',detail:entryLabel(e),fn:`entryForm('${e.home_id?'home':'car'}','${e.home_id||e.car_id}','${e.type}','${e.id}')`,action:'Aç'}));
+  upcoming.slice(0,2).forEach(e=>items.push({icon:'📅',title:e.category||'Yaklaşan',detail:`${daysUntil(e.date)} gün · ${entryLabel(e)}`,fn:`page('calendar')`,action:'Takvim'}));
+  const trimmed=items.slice(0,5);
+  if(!trimmed.length)return '<div class="empty compact">Bugün için kritik aksiyon görünmüyor.</div>';
+  return `<div class="priority-list">${trimmed.map(i=>`<div class="priority-item"><div><b>${i.icon} ${esc(i.title)}</b><small>${esc(i.detail)}</small></div><button class="small secondary" onclick="${i.fn}">${i.action}</button></div>`).join('')}</div>`;
 }
 function homeUpcomingRow(e){
   const asset=e.home_id?state.homes.find(h=>h.id===e.home_id)?.name:state.cars.find(c=>c.id===e.car_id)?.name;
   const d=daysUntil(e.date);
   const label=d===0?'Bugün':(d===1?'Yarın':`${d} gün`);
-  return `<div class="home-row upcoming-row"><div><b>${esc(e.category||'Kayıt')}</b><small>${esc(asset||'Varlık')} · ${esc(e.status||'Bekleniyor')}</small></div><time>${label}<br><small>${esc(e.date)}</small></time></div>`
+  return `<div class="home-row upcoming-row"><div><b>${esc(e.category||'Kayıt')}</b><small>${esc(asset||'Varlık')} · ${esc(e.status||'Bekleniyor')} · ${fmt(e.amount)}</small></div><time>${label}<br><small>${esc(e.date)}</small></time></div>`
 }
 function homeRecentRow(e){
   const asset=e.home_id?state.homes.find(h=>h.id===e.home_id)?.name:state.cars.find(c=>c.id===e.car_id)?.name;
