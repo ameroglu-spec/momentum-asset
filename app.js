@@ -95,7 +95,7 @@ function dashboard(){
 }
 function homeAiBrief(income,exp,upcoming,overdue){
   const tips=[];
-  if(overdue.length) tips.push({level:'danger',icon:'⚠️',text:`<b>${overdue.length} geciken kayıt</b> var. Önce bunları kontrol et.`});
+  if(overdue.length) tips.push({level:'danger',icon:'⚠️',text:`<b>${overdue.length} geciken kayıt</b> var. Önce bunları kontrol et. <button class="ai-inline-action" onclick="showOverdueRecords()">Gecikenleri Gör</button>`});
   if(upcoming.length){
     const first=upcoming[0];
     const d=daysUntil(first.date);
@@ -116,6 +116,12 @@ function daysUntil(d){
   const a=new Date(today()+'T00:00:00');
   const b=new Date(d+'T00:00:00');
   return Math.round((b-a)/86400000);
+}
+function showOverdueRecords(){
+  const overdue=state.entries.filter(e=>!['Ödendi','Alındı','İptal'].includes(e.status)&&new Date(e.date)<new Date(today()))
+    .sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(!overdue.length){toast('Geciken kayıt yok.');return}
+  openModal(`<h2>Geciken Kayıtlar</h2><p class="muted">Önce bu kayıtları kontrol et. Düzenle, belge ekle veya ödeme durumunu güncelle.</p>${entryTable(overdue)}`);
 }
 function homeUpcomingRow(e){
   const asset=e.home_id?state.homes.find(h=>h.id===e.home_id)?.name:state.cars.find(c=>c.id===e.car_id)?.name;
