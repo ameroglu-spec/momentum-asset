@@ -1,9 +1,10 @@
 {
-  "name": "Momentum Asset",
-  "short_name": "Asset",
+  "name": "Momentum Hub",
+  "short_name": "Momentum",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
+  "description": "Know Today. Plan Tomorrow.",
   "icons": []
 }

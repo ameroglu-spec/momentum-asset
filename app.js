@@ -38,17 +38,17 @@ function dashboard(){
     <div class="home-shell">
       <section class="home-hero">
         <div>
-          <span class="eyebrow">Momentum Hub</span>
+          <span class="eyebrow">Momentum Hub · MH-006</span>
           <h2>Bugün</h2>
-          <p>${esc(weekday)} · ${esc(dateText)}</p>
+          <p>Günaydın Ali Bey 👋 · ${esc(weekday)} · ${esc(dateText)}</p>
         </div>
-        <div class="home-slogan">Know Today.<br>Plan Tomorrow.</div>
+        <div class="home-slogan">Know Today.<br>Plan Tomorrow.<small>Home Screen UI</small></div>
       </section>
 
       <section class="home-grid-main">
         <div class="home-card ai-card">
           <div class="home-card-head"><span>🤖</span><div><b>AI Önerileri</b><small>Odaklanman gerekenler</small></div></div>
-          <div class="ai-list">${ai.map(x=>`<div class="ai-item">${x}</div>`).join('')}</div>
+          <div class="ai-focus">Bugün dikkat etmen gereken başlıklar burada toplanır.</div><div class="ai-list">${ai.map(x=>`<div class="ai-item">${x}</div>`).join('')}</div>
         </div>
 
         <div class="home-card">
