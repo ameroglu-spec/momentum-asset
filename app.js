@@ -55,14 +55,14 @@ function dashboard(){
             <h3>Bugün dikkat etmen gerekenler</h3>
           </div>
         </div>
-        <div class="ai-focus-list">${ai.map(x=>`<div class="ai-focus-item ${x.level}"><span>${x.icon}</span><div>${x.text}</div></div>`).join('')}</div>
+        <div class="ai-action-list">${ai.map(x=>aiActionItem(x)).join('')}</div>
       </section>
 
-      <section class="quick-strip">
-        <button onclick="quickEntry('income')">💰 Gelir</button>
-        <button onclick="quickEntry('expense')">💸 Gider</button>
-        <button onclick="quickDoc()">📎 Belge</button>
-        <button onclick="quickAction()">➕ Diğer</button>
+      <section class="quick-strip v521-quick">
+        <button onclick="quickEntry('income')"><b>💰 Gelir</b><small>3 sn kayıt</small></button>
+        <button onclick="quickEntry('expense')"><b>💸 Gider</b><small>Ev / araç</small></button>
+        <button onclick="quickDoc()"><b>📎 Belge</b><small>Dosya bağla</small></button>
+        <button onclick="quickAction()"><b>⚡ İşlem Merkezi</b><small>Tüm kısayollar</small></button>
       </section>
 
       <section class="home-status-grid v511-stats">
@@ -95,22 +95,44 @@ function dashboard(){
 }
 function homeAiBrief(income,exp,upcoming,overdue){
   const tips=[];
-  if(overdue.length) tips.push({level:'danger',icon:'⚠️',text:`<b>${overdue.length} geciken kayıt</b> var. Önce bunları kontrol et. <button class="ai-inline-action" onclick="showOverdueRecords()">Gecikenleri Gör</button>`});
+  if(overdue.length) tips.push({
+    level:'danger',icon:'⚠️',title:`${overdue.length} geciken kayıt var`,
+    detail:'Önce bu kayıtları kontrol et.',action:'Gecikenleri Aç',fn:'showOverdueRecords()'
+  });
   if(upcoming.length){
     const first=upcoming[0];
     const d=daysUntil(first.date);
-    tips.push({level:d<=7?'warning':'info',icon:'📅',text:`En yakın iş: <b>${esc(first.category||'Kayıt')}</b> · ${d===0?'bugün':d+' gün sonra'}. <button class="ai-inline-action" onclick="page('calendar')">Takvime Git</button>`});
+    tips.push({
+      level:d<=7?'warning':'info',icon:'📅',title:`${esc(first.category||'Yaklaşan kayıt')}`,
+      detail:`${d===0?'Bugün':d+' gün sonra'} · ${esc(first.date)}`,action:'Takvime Git',fn:"page('calendar')"
+    });
   }
   const net=income-exp;
-  tips.push({level:net>=0?'success':'warning',icon:net>=0?'✅':'💸',text:`Bu ay net durumun <b>${fmt(net)}</b>.`});
+  tips.push({
+    level:net>=0?'success':'warning',icon:net>=0?'✅':'💸',title:net>=0?'Bu ay net durum pozitif':'Bu ay giderler geliri geçti',
+    detail:`Net durum: ${fmt(net)}`,action:'Raporu Aç',fn:"page('reports')"
+  });
   const carExp=state.entries.filter(e=>e.car_id&&e.type==='expense').reduce((s,e)=>s+Number(e.amount||0),0);
   const homeExp=state.entries.filter(e=>e.home_id&&e.type==='expense').reduce((s,e)=>s+Number(e.amount||0),0);
   if(carExp||homeExp){
-    tips.push({level:'info',icon:'📌',text:`Toplam gider dağılımında araç <b>${fmt(carExp)}</b>, ev <b>${fmt(homeExp)}</b>.`});
+    tips.push({
+      level:'info',icon:'📌',title:'Gider dağılımı hazır',
+      detail:`Araç ${fmt(carExp)} · Ev ${fmt(homeExp)}`,action:'Detayları Aç',fn:"page('reports')"
+    });
   }else if(!state.homes.length&&!state.cars.length){
-    tips.push({level:'info',icon:'➕',text:`Başlamak için önce bir ev veya araç ekle.`});
+    tips.push({
+      level:'info',icon:'➕',title:'Başlamak için varlık ekle',
+      detail:'İlk ev veya aracını ekleyerek Hub’ı başlat.',action:'Varlık Ekle',fn:'quickAction()'
+    });
   }
   return tips.slice(0,4);
+}
+function aiActionItem(x){
+  return `<div class="ai-action-item ${x.level}">
+    <div class="ai-action-icon">${x.icon}</div>
+    <div class="ai-action-copy"><b>${x.title}</b><span>${x.detail}</span></div>
+    ${x.action?`<button class="ai-action-btn" onclick="${x.fn}">${x.action}</button>`:''}
+  </div>`;
 }
 function daysUntil(d){
   const a=new Date(today()+'T00:00:00');
@@ -222,7 +244,7 @@ async function delEntry(id){if(confirm('Kayıt silinsin mi?')){await sb.from('en
 async function delAsset(table,id){if(confirm('Bu varlık silinsin mi? İlgili gelir/gider kayıtları silinmez.')){await sb.from(table).delete().eq('id',id);await load()}}
 function getUpcoming(days=30){const now=new Date(today());const max=new Date(now);max.setDate(max.getDate()+days);return state.entries.filter(e=>!['Ödendi','Alındı','İptal'].includes(e.status)&&new Date(e.date)>=now&&new Date(e.date)<=max).sort((a,b)=>a.date.localeCompare(b.date))}
 function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='momentum-asset-v5-yedek.json';a.click()}
-function quickAction(){openModal(`<div class="quick-modal-head"><div><span class="eyebrow">Momentum Hub</span><h2>Hızlı İşlem Merkezi</h2><p class="muted">En sık kullanılan işlemleri tek ekrandan başlat.</p></div></div><div class="quickgrid quickgrid-v513"><button class="quicktile primary" onclick="quickEntry('income')"><b>💰 Gelir Ekle</b><br><span class="muted">Kira / diğer gelir kaydı</span></button><button class="quicktile primary" onclick="quickEntry('expense')"><b>💸 Gider Ekle</b><br><span class="muted">Ev veya araç gideri</span></button><button class="quicktile" onclick="quickDoc()"><b>📎 Belge Yükle</b><br><span class="muted">Belgeyi varlık veya kayıtla bağla</span></button><button class="quicktile" onclick="showOverdueRecords()"><b>⚠️ Gecikenleri Gör</b><br><span class="muted">Ödeme durumlarını hızlı güncelle</span></button><button class="quicktile" onclick="homeForm()"><b>🏠 Yeni Ev</b><br><span class="muted">Gayrimenkul ekle</span></button><button class="quicktile" onclick="carForm()"><b>🚗 Yeni Araç</b><br><span class="muted">Araç ekle</span></button><button class="quicktile" onclick="page('calendar');closeModal()"><b>📅 Takvim</b><br><span class="muted">Yaklaşan kayıtları gör</span></button><button class="quicktile" onclick="page('reports');closeModal()"><b>📊 Raporlar</b><br><span class="muted">Finans özetini aç</span></button></div>`)}
+function quickAction(){openModal(`<div class="quick-modal-head v521-modal-head"><div><span class="eyebrow">Momentum Hub</span><h2>Quick Capture</h2><p class="muted">En sık kullanılan işlemleri tek ekrandan başlat.</p></div></div><div class="quickgrid quickgrid-v521"><button class="quicktile primary" onclick="quickEntry('income')"><i>💰</i><b>Gelir Ekle</b><span>Kira / diğer gelir</span></button><button class="quicktile primary" onclick="quickEntry('expense')"><i>💸</i><b>Gider Ekle</b><span>Ev veya araç gideri</span></button><button class="quicktile" onclick="quickDoc()"><i>📎</i><b>Belge Yükle</b><span>Belgeyi kayıtla bağla</span></button><button class="quicktile" onclick="showOverdueRecords()"><i>⚠️</i><b>Gecikenleri Gör</b><span>Durumları hızlı güncelle</span></button><button class="quicktile" onclick="homeForm()"><i>🏠</i><b>Yeni Ev</b><span>Gayrimenkul ekle</span></button><button class="quicktile" onclick="carForm()"><i>🚗</i><b>Yeni Araç</b><span>Araç ekle</span></button><button class="quicktile" onclick="page('calendar');closeModal()"><i>📅</i><b>Takvim</b><span>Yaklaşan işleri gör</span></button><button class="quicktile" onclick="page('reports');closeModal()"><i>📊</i><b>Raporlar</b><span>Finans özetini aç</span></button></div>`)}
 function quickEntry(type){const opts=[...state.homes.map(h=>`<option value="home:${h.id}">Ev: ${esc(h.name)}</option>`),...state.cars.map(c=>`<option value="car:${c.id}">Araç: ${esc(c.name)}</option>`)].join('');if(!opts)return toast('Önce ev veya araç ekle.');openModal(`<h2>${type==='income'?'Gelir':'Gider'} için varlık seç</h2><select id="quick_asset">${opts}</select><button onclick="const v=$('quick_asset').value.split(':'); entryForm(v[0],v[1],'${type}')">Devam</button>`)}
 function quickDoc(){const opts=[...state.homes.map(h=>`<option value="home:${h.id}">Ev: ${esc(h.name)}</option>`),...state.cars.map(c=>`<option value="car:${c.id}">Araç: ${esc(c.name)}</option>`)].join('');if(!opts)return toast('Önce ev veya araç ekle.');openModal(`<h2>Belge için varlık seç</h2><select id="quick_asset">${opts}</select><button onclick="const v=$('quick_asset').value.split(':'); showDocs(v[0],v[1])">Devam</button>`)}
 function doSearch(q){q=(q||'').toLowerCase().trim();if(!q)return page(currentPage);const rows=[];state.homes.forEach(h=>{if(JSON.stringify(h).toLowerCase().includes(q))rows.push(`<div class="item"><b>🏠 ${esc(h.name)}</b><p class="muted">${esc(h.address||'')}</p><button class="small secondary" onclick="page('homes')">Gayrimenkullere git</button></div>`)});state.cars.forEach(c=>{if(JSON.stringify(c).toLowerCase().includes(q))rows.push(`<div class="item"><b>🚗 ${esc(c.name)}</b><p class="muted">${esc(c.plate||'')}</p><button class="small secondary" onclick="page('cars')">Araçlara git</button></div>`)});state.entries.forEach(e=>{if(JSON.stringify(e).toLowerCase().includes(q))rows.push(entryCard(e,true))});state.documents.forEach(d=>{if(JSON.stringify(d).toLowerCase().includes(q))rows.push(docRow(d))});$('title').textContent='Arama';$('content').innerHTML=`<div class="card"><h2>Arama Sonuçları</h2><p class="muted">${esc(q)} için ${rows.length} sonuç</p><div class="searchResult">${rows.join('')||'<div class="empty">Sonuç bulunamadı.</div>'}</div></div>`}
