@@ -30,3 +30,12 @@ button.success{background:linear-gradient(135deg,#16a34a,#15803d)!important;colo
 .quickgrid-v513{grid-template-columns:repeat(4,minmax(0,1fr))}.quickgrid-v513 .quicktile{min-height:104px;transition:.18s}.quickgrid-v513 .quicktile:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.65)}.quickgrid-v513 .quicktile.primary{background:linear-gradient(135deg,rgba(37,99,235,.22),rgba(20,184,166,.12));border-color:rgba(96,165,250,.35)}
 @media(max-width:1050px){.quickgrid-v513{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.quickgrid-v513{grid-template-columns:1fr}.table-actions button{width:100%}}
+
+/* V5.1.4 - Reports desktop layout fix */
+@media (min-width:901px){
+  #content .grid2{align-items:start;gap:22px;grid-template-columns:repeat(2,minmax(0,1fr));}
+  #content .grid2>.card{min-width:0;margin:0;overflow:hidden;}
+  #content .grid2 .tablewrap{width:100%;max-width:100%;overflow-x:auto;}
+  #content .grid2 .table{min-width:620px;}
+  #content .grid2 .table th,#content .grid2 .table td{white-space:nowrap;}
+}
