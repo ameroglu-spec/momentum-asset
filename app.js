@@ -33,64 +33,95 @@ function dashboard(){
   const recent=[...state.entries].slice(0,5);
   const weekday=now.toLocaleDateString('tr-TR',{weekday:'long'});
   const dateText=now.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+  const hour=now.getHours();
+  const greeting=hour<12?'Günaydın':(hour<18?'İyi günler':'İyi akşamlar');
   const ai=homeAiBrief(income,exp,upcoming,overdue);
   $('content').innerHTML=`
-    <div class="home-shell">
-      <section class="home-hero">
+    <div class="home-shell v511">
+      <section class="home-hero v511-hero">
         <div>
-          <span class="eyebrow">Momentum Hub · MH-006</span>
+          <span class="eyebrow">Momentum Hub</span>
           <h2>Bugün</h2>
-          <p>Günaydın Ali Bey 👋 · ${esc(weekday)} · ${esc(dateText)}</p>
+          <p>${esc(greeting)} Ali Bey · ${esc(weekday)} · ${esc(dateText)}</p>
         </div>
-        <div class="home-slogan">Know Today.<br>Plan Tomorrow.<small>Home Screen UI</small></div>
+        <div class="home-slogan">Know Today.<br>Plan Tomorrow.</div>
       </section>
 
-      <section class="home-grid-main">
-        <div class="home-card ai-card">
-          <div class="home-card-head"><span>🤖</span><div><b>AI Önerileri</b><small>Odaklanman gerekenler</small></div></div>
-          <div class="ai-focus">Bugün dikkat etmen gereken başlıklar burada toplanır.</div><div class="ai-list">${ai.map(x=>`<div class="ai-item">${x}</div>`).join('')}</div>
+      <section class="ai-focus-card">
+        <div class="ai-focus-head">
+          <div class="ai-orb">🤖</div>
+          <div>
+            <span class="eyebrow">Momentum AI</span>
+            <h3>Bugün dikkat etmen gerekenler</h3>
+          </div>
         </div>
-
-        <div class="home-card">
-          <div class="home-card-head"><span>📅</span><div><b>Yaklaşan İşler</b><small>Önümüzdeki 30 gün</small></div></div>
-          ${upcoming.length?`<div class="upcoming-list">${upcoming.slice(0,6).map(e=>homeUpcomingRow(e)).join('')}</div>`:'<div class="empty compact">Yaklaşan kayıt yok.</div>'}
-        </div>
+        <div class="ai-focus-list">${ai.map(x=>`<div class="ai-focus-item ${x.level}"><span>${x.icon}</span><div>${x.text}</div></div>`).join('')}</div>
       </section>
 
-      <section class="home-status-grid">
+      <section class="quick-strip">
+        <button onclick="quickEntry('income')">💰 Gelir</button>
+        <button onclick="quickEntry('expense')">💸 Gider</button>
+        <button onclick="quickDoc()">📎 Belge</button>
+        <button onclick="quickAction()">➕ Diğer</button>
+      </section>
+
+      <section class="home-status-grid v511-stats">
         <div class="home-stat"><span>Bu Ay Gelir</span><b>${fmt(income)}</b></div>
         <div class="home-stat"><span>Bu Ay Gider</span><b>${fmt(exp)}</b></div>
-        <div class="home-stat"><span>Bekleyen</span><b>${upcoming.length}</b></div>
-        <div class="home-stat"><span>Geciken</span><b>${overdue.length}</b></div>
+        <div class="home-stat"><span>Net Durum</span><b class="${income-exp>=0?'pos':'neg'}">${fmt(income-exp)}</b></div>
+        <div class="home-stat"><span>Yaklaşan</span><b>${upcoming.length}</b></div>
       </section>
 
       <section class="home-grid-main lower">
         <div class="home-card">
-          <div class="home-card-head"><span>📊</span><div><b>Bugünkü Durum</b><small>Kısa finans özeti</small></div></div>
-          <div class="today-summary">
-            <div><span>Aylık Net</span><b>${fmt(income-exp)}</b></div>
-            <div><span>Toplam Varlık</span><b>${fmt(assetValue())}</b></div>
-            <div><span>Ev / Araç</span><b>${state.homes.length} / ${state.cars.length}</b></div>
-          </div>
+          <div class="home-card-head"><span>📅</span><div><b>Yaklaşan İşler</b><small>Önümüzdeki 30 gün</small></div></div>
+          ${upcoming.length?`<div class="upcoming-list">${upcoming.slice(0,7).map(e=>homeUpcomingRow(e)).join('')}</div>`:'<div class="empty compact">Önümüzdeki 30 gün için açık kayıt yok.</div>'}
         </div>
         <div class="home-card">
           <div class="home-card-head"><span>📰</span><div><b>Son Hareketler</b><small>En son 5 kayıt</small></div></div>
           ${recent.length?recent.map(e=>homeRecentRow(e)).join(''):'<div class="empty compact">Henüz hareket yok.</div>'}
         </div>
       </section>
+
+      <section class="home-card today-decision">
+        <div class="home-card-head"><span>📊</span><div><b>Bugünkü Durum</b><small>Karar özeti</small></div></div>
+        <div class="today-summary v511-summary">
+          <div><span>Toplam Varlık</span><b>${fmt(assetValue())}</b></div>
+          <div><span>Ev / Araç</span><b>${state.homes.length} / ${state.cars.length}</b></div>
+          <div><span>Geciken Kayıt</span><b class="${overdue.length?'neg':''}">${overdue.length}</b></div>
+        </div>
+      </section>
     </div>`
 }
 function homeAiBrief(income,exp,upcoming,overdue){
   const tips=[];
-  if(overdue.length) tips.push(`<b>${overdue.length} geciken kayıt</b> var. Önce bunları kontrol et.`);
-  if(upcoming.length) tips.push(`<b>${upcoming.length} yaklaşan iş</b> var. En yakın tarih: ${esc(upcoming[0].date)}.`);
-  tips.push(`Bu ay net durumun <b>${fmt(income-exp)}</b>.`);
-  if(!state.homes.length&&!state.cars.length) tips.push(`Başlamak için önce bir ev veya araç ekle.`);
+  if(overdue.length) tips.push({level:'danger',icon:'⚠️',text:`<b>${overdue.length} geciken kayıt</b> var. Önce bunları kontrol et.`});
+  if(upcoming.length){
+    const first=upcoming[0];
+    const d=daysUntil(first.date);
+    tips.push({level:d<=7?'warning':'info',icon:'📅',text:`En yakın iş: <b>${esc(first.category||'Kayıt')}</b> · ${d===0?'bugün':d+' gün sonra'}.`});
+  }
+  const net=income-exp;
+  tips.push({level:net>=0?'success':'warning',icon:net>=0?'✅':'💸',text:`Bu ay net durumun <b>${fmt(net)}</b>.`});
+  const carExp=state.entries.filter(e=>e.car_id&&e.type==='expense').reduce((s,e)=>s+Number(e.amount||0),0);
+  const homeExp=state.entries.filter(e=>e.home_id&&e.type==='expense').reduce((s,e)=>s+Number(e.amount||0),0);
+  if(carExp||homeExp){
+    tips.push({level:'info',icon:'📌',text:`Toplam gider dağılımında araç <b>${fmt(carExp)}</b>, ev <b>${fmt(homeExp)}</b>.`});
+  }else if(!state.homes.length&&!state.cars.length){
+    tips.push({level:'info',icon:'➕',text:`Başlamak için önce bir ev veya araç ekle.`});
+  }
   return tips.slice(0,4);
+}
+function daysUntil(d){
+  const a=new Date(today()+'T00:00:00');
+  const b=new Date(d+'T00:00:00');
+  return Math.round((b-a)/86400000);
 }
 function homeUpcomingRow(e){
   const asset=e.home_id?state.homes.find(h=>h.id===e.home_id)?.name:state.cars.find(c=>c.id===e.car_id)?.name;
-  return `<div class="home-row"><div><b>${esc(e.category||'Kayıt')}</b><small>${esc(asset||'Varlık')} · ${esc(e.status||'Bekleniyor')}</small></div><time>${esc(e.date)}</time></div>`
+  const d=daysUntil(e.date);
+  const label=d===0?'Bugün':(d===1?'Yarın':`${d} gün`);
+  return `<div class="home-row upcoming-row"><div><b>${esc(e.category||'Kayıt')}</b><small>${esc(asset||'Varlık')} · ${esc(e.status||'Bekleniyor')}</small></div><time>${label}<br><small>${esc(e.date)}</small></time></div>`
 }
 function homeRecentRow(e){
   const asset=e.home_id?state.homes.find(h=>h.id===e.home_id)?.name:state.cars.find(c=>c.id===e.car_id)?.name;
