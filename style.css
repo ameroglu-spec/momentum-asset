@@ -21,3 +21,12 @@ body.light .ai-focus-card{background:linear-gradient(135deg,#eff6ff,#ffffff);}
 @media(max-width:900px){.ai-focus-list,.quick-strip,.v511-summary{grid-template-columns:1fr}.ai-focus-head h3{font-size:20px}.quick-strip{position:sticky;top:62px;z-index:3}.quick-strip button{padding:13px}}
 
 .ai-inline-action{margin-left:10px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.10);color:var(--text);border-radius:999px;padding:6px 10px;font-weight:900;cursor:pointer;white-space:nowrap}.ai-inline-action:hover{border-color:rgba(125,211,252,.75);background:rgba(125,211,252,.14)}body.light .ai-inline-action{background:#fff;color:#0f172a;border-color:#cbd5e1}
+
+
+/* V5.1.3 – Quick Action and overdue workflow */
+button.success{background:linear-gradient(135deg,#16a34a,#15803d)!important;color:#fff!important;box-shadow:none}
+.table-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.quick-modal-head{background:linear-gradient(135deg,rgba(37,99,235,.18),rgba(20,184,166,.12));border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:14px}.quick-modal-head h2{margin:4px 0 6px}.quick-modal-head p{margin:0}
+.quickgrid-v513{grid-template-columns:repeat(4,minmax(0,1fr))}.quickgrid-v513 .quicktile{min-height:104px;transition:.18s}.quickgrid-v513 .quicktile:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.65)}.quickgrid-v513 .quicktile.primary{background:linear-gradient(135deg,rgba(37,99,235,.22),rgba(20,184,166,.12));border-color:rgba(96,165,250,.35)}
+@media(max-width:1050px){.quickgrid-v513{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.quickgrid-v513{grid-template-columns:1fr}.table-actions button{width:100%}}
