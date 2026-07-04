@@ -19,10 +19,34 @@ async function ensureDefaults(){const need=[];Object.entries(DEFAULTS).forEach((
 function defs(type,activeOnly=true){return state.definitions.filter(d=>d.type===type&&(!activeOnly||d.active))}
 function optionHtml(type,selected=''){let arr=defs(type);if(!arr.length)arr=(DEFAULTS[type]||[]).map(name=>({name}));const val=selected||arr[0]?.name||'Diğer';return arr.map(o=>`<option value="${esc(o.name)}" ${o.name===val?'selected':''}>${esc(o.name)}</option>`).join('')}
 function statusClass(s){return ['Ödendi','Alındı'].includes(s)?'ok':(s==='Gecikti'?'bad':'warn')}
-function page(p){currentPage=p;document.querySelectorAll('.nav[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==p));$('title').textContent={dashboard:'Bugün',homes:'Varlıklar',cars:'Araçlar',calendar:'Takvim',documents:'Belgeler',reports:'Raporlar',definitions:'Tanımlar',backup:'Yedek'}[p]||p;({dashboard,homes,cars,calendar,documents,reports,definitions,backup}[p])();$('side').classList.remove('open')}
+function page(p){currentPage=p;document.querySelectorAll('.nav[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==p));$('title').textContent={dashboard:'Bugün',homes:'Varlıklar',cars:'Araçlar',notifications:'Bildirimler',calendar:'Takvim',documents:'Belgeler',reports:'Raporlar',definitions:'Tanımlar',backup:'Yedek'}[p]||p;updateNotificationBadge();({dashboard,homes,cars,notifications,calendar,documents,reports,definitions,backup}[p])();$('side').classList.remove('open')}
 function sum(arr,type){return arr.filter(e=>e.type===type).reduce((s,e)=>s+Number(e.amount||0),0)}
 function assetValue(){return state.homes.reduce((s,h)=>s+Number(h.current_value||0),0)+state.cars.reduce((s,c)=>s+Number(c.current_value||0),0)}
 function assetValueBreakdown(){return {home:state.homes.reduce((s,h)=>s+Number(h.current_value||0),0),car:state.cars.reduce((s,c)=>s+Number(c.current_value||0),0)}}
+
+function isClosedStatus(s){return ['Ödendi','Alındı','İptal'].includes(s)}
+function getOverdue(){return state.entries.filter(e=>!isClosedStatus(e.status)&&new Date(e.date)<new Date(today())).sort((a,b)=>a.date.localeCompare(b.date))}
+function buildNotifications(){
+  const overdue=getOverdue();
+  const upcoming=getUpcoming(30);
+  const todayOpen=state.entries.filter(e=>!isClosedStatus(e.status)&&e.date===today()).sort((a,b)=>(a.category||'').localeCompare(b.category||''));
+  const recentDocs=state.documents.slice(0,4);
+  const notes=[];
+  overdue.forEach(e=>notes.push({level:'danger',icon:'⚠️',title:`Geciken ${e.type==='income'?'tahsilat':'ödeme'}`,detail:entryLabel(e),date:e.date,action:'Kontrol Et',fn:`entryForm('${e.home_id?'home':'car'}','${e.home_id||e.car_id}','${e.type}','${e.id}')`}));
+  upcoming.slice(0,8).forEach(e=>notes.push({level:daysUntil(e.date)<=7?'warning':'info',icon:'📅',title:`Yaklaşan: ${e.category||'Kayıt'}`,detail:`${daysUntil(e.date)===0?'Bugün':daysUntil(e.date)+' gün sonra'} · ${entryLabel(e)}`,date:e.date,action:'Takvim',fn:`page('calendar')`}));
+  todayOpen.forEach(e=>notes.push({level:'warning',icon:'📌',title:'Bugün yapılacak',detail:entryLabel(e),date:e.date,action:'Aç',fn:`entryForm('${e.home_id?'home':'car'}','${e.home_id||e.car_id}','${e.type}','${e.id}')`}));
+  recentDocs.forEach(d=>notes.push({level:'info',icon:'📄',title:'Son eklenen belge',detail:`${d.doc_type||'Belge'} · ${d.file_name||''}`,date:(d.created_at||'').slice(0,10),action:'Belgeler',fn:`page('documents')`}));
+  if(!notes.length)notes.push({level:'success',icon:'✅',title:'Her şey yolunda',detail:'Geciken veya yaklaşan kritik kayıt görünmüyor.',date:today(),action:'Bugün',fn:`page('dashboard')`});
+  return notes;
+}
+function updateNotificationBadge(){
+  const b=$('navNotifyBadge');
+  if(!b)return;
+  const count=getOverdue().length+getUpcoming(7).length;
+  b.textContent=count;
+  b.classList.toggle('hidden',count===0);
+}
+function notificationItem(n){return `<div class="notification-item ${n.level}"><div class="notification-icon">${n.icon}</div><div class="notification-copy"><b>${esc(n.title)}</b><span>${esc(n.detail)}</span><small>${esc(n.date||'')}</small></div>${n.action?`<button class="small secondary" onclick="${n.fn}">${esc(n.action)}</button>`:''}</div>`}
 function dashboard(){
   const now=new Date();
   const y=now.getFullYear(),m=now.getMonth();
@@ -178,7 +202,33 @@ async function markEntryDone(id){
   if(overdue.length)showOverdueRecords();else closeModal();
 }
 
-function calendar(){const upcoming=getUpcoming(365);$('content').innerHTML=`<div class="card"><div class="row"><h2 style="flex:1">Finans Takvimi</h2><button class="secondary" onclick="quickAction()">+ Hızlı İşlem</button></div>${calendarTimeline(upcoming,false)}</div>`}
+function notifications(){
+  const notes=buildNotifications();
+  const overdue=getOverdue().length, week=getUpcoming(7).length, month=getUpcoming(30).length;
+  $('content').innerHTML=`<div class="card notifications-head"><div><span class="eyebrow">Momentum Hub</span><h2>Bildirim Merkezi</h2><p class="muted">Geciken, yaklaşan ve bugün dikkat edilmesi gereken kayıtlar.</p></div><button onclick="quickAction()">+ Hızlı İşlem</button></div><div class="notification-stats"><div><span>Geciken</span><b class="neg">${overdue}</b></div><div><span>7 Gün</span><b>${week}</b></div><div><span>30 Gün</span><b>${month}</b></div></div><div class="card"><h2>Uyarılar</h2><div class="notification-list">${notes.map(notificationItem).join('')}</div></div>`;
+}
+function calendar(){
+  const all=getCalendarItems(365);
+  $('content').innerHTML=`<div class="card calendar-head"><div><span class="eyebrow">Finans Takvimi</span><h2>Takvim 2.0</h2><p class="muted">Geciken, bugün ve yaklaşan kayıtları renkli görünümle takip et.</p></div><button onclick="quickAction()">+ Hızlı İşlem</button></div>${calendarTabs()}<div class="calendar-layout"><div class="calendar-month">${calendarMonthView(all)}</div><div class="calendar-agenda card"><h2>Sıradaki İşler</h2>${calendarTimeline(all.slice(0,20),false)}</div></div>`;
+}
+function calendarTabs(){return `<div class="calendar-tabs"><button class="active" onclick="filterCalendar('month')">Ay</button><button onclick="filterCalendar('week')">Hafta</button><button onclick="filterCalendar('day')">Gün</button></div>`}
+function filterCalendar(mode){toast(`${mode==='month'?'Ay':mode==='week'?'Hafta':'Gün'} görünümü aktif. Detaylı filtre V5.2.3'te geliştirilecek.`)}
+function getCalendarItems(days=365){
+  const now=new Date(today());const max=new Date(now);max.setDate(max.getDate()+days);
+  return state.entries.filter(e=>!isClosedStatus(e.status)&&new Date(e.date)<=max).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function calendarMonthView(list){
+  const now=new Date();const y=now.getFullYear(),m=now.getMonth();const first=new Date(y,m,1);const last=new Date(y,m+1,0);let html='';
+  const start=(first.getDay()+6)%7;for(let i=0;i<start;i++)html+='<div class="cal-cell empty-cell"></div>';
+  for(let d=1;d<=last.getDate();d++){
+    const iso=new Date(y,m,d).toISOString().slice(0,10);
+    const items=list.filter(e=>e.date===iso);
+    const cls=iso===today()?'today-cell':'';
+    html+=`<div class="cal-cell ${cls}"><b>${d}</b>${items.slice(0,3).map(e=>`<span class="cal-dot ${calendarLevel(e)}" title="${esc(entryLabel(e))}">${esc(e.category||'Kayıt')}</span>`).join('')}${items.length>3?`<small>+${items.length-3}</small>`:''}</div>`;
+  }
+  return `<div class="cal-weekdays"><span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span><span>Cmt</span><span>Paz</span></div><div class="cal-grid">${html}</div>`;
+}
+function calendarLevel(e){if(new Date(e.date)<new Date(today()))return 'danger';if(e.date===today())return 'warning';return 'info'}
 function calendarTimeline(list,compact=false){if(!list.length)return '<div class="empty">Açık veya yaklaşan kayıt yok.</div>';const groups={};list.forEach(e=>{groups[e.date]??=[];groups[e.date].push(e)});return `<div class="timeline">${Object.keys(groups).sort().map(d=>`<div class="day"><h3>${trDate(d)}</h3>${groups[d].map(e=>entryCard(e,!compact)).join('')}</div>`).join('')}</div>`}
 function trDate(d){return new Date(d+'T00:00:00').toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric',weekday:'long'})}
 function reports(){const homeEntries=state.entries.filter(e=>e.home_id),carEntries=state.entries.filter(e=>e.car_id);$('content').innerHTML=`<div class="grid"><div class="kpi">Ev Değeri<b>${fmt(state.homes.reduce((s,h)=>s+Number(h.current_value||0),0))}</b></div><div class="kpi">Araç Değeri<b>${fmt(state.cars.reduce((s,c)=>s+Number(c.current_value||0),0))}</b></div><div class="kpi">Ev Net<b>${fmt(sum(homeEntries,'income')-sum(homeEntries,'expense'))}</b></div><div class="kpi">Araç Maliyeti<b>${fmt(sum(carEntries,'expense'))}</b></div></div><div class="grid2"><div class="card"><h2>Ev Alt Kategori Raporu</h2>${reportTable(homeEntries)}</div><div class="card"><h2>Araç Alt Kategori Raporu</h2>${reportTable(carEntries)}</div></div><div class="card"><h2>Varlık Değerleri</h2>${assetValueTable()}</div>`}
@@ -244,7 +294,7 @@ async function delEntry(id){if(confirm('Kayıt silinsin mi?')){await sb.from('en
 async function delAsset(table,id){if(confirm('Bu varlık silinsin mi? İlgili gelir/gider kayıtları silinmez.')){await sb.from(table).delete().eq('id',id);await load()}}
 function getUpcoming(days=30){const now=new Date(today());const max=new Date(now);max.setDate(max.getDate()+days);return state.entries.filter(e=>!['Ödendi','Alındı','İptal'].includes(e.status)&&new Date(e.date)>=now&&new Date(e.date)<=max).sort((a,b)=>a.date.localeCompare(b.date))}
 function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='momentum-asset-v5-yedek.json';a.click()}
-function quickAction(){openModal(`<div class="quick-modal-head v521-modal-head"><div><span class="eyebrow">Momentum Hub</span><h2>Quick Capture</h2><p class="muted">En sık kullanılan işlemleri tek ekrandan başlat.</p></div></div><div class="quickgrid quickgrid-v521"><button class="quicktile primary" onclick="quickEntry('income')"><i>💰</i><b>Gelir Ekle</b><span>Kira / diğer gelir</span></button><button class="quicktile primary" onclick="quickEntry('expense')"><i>💸</i><b>Gider Ekle</b><span>Ev veya araç gideri</span></button><button class="quicktile" onclick="quickDoc()"><i>📎</i><b>Belge Yükle</b><span>Belgeyi kayıtla bağla</span></button><button class="quicktile" onclick="showOverdueRecords()"><i>⚠️</i><b>Gecikenleri Gör</b><span>Durumları hızlı güncelle</span></button><button class="quicktile" onclick="homeForm()"><i>🏠</i><b>Yeni Ev</b><span>Gayrimenkul ekle</span></button><button class="quicktile" onclick="carForm()"><i>🚗</i><b>Yeni Araç</b><span>Araç ekle</span></button><button class="quicktile" onclick="page('calendar');closeModal()"><i>📅</i><b>Takvim</b><span>Yaklaşan işleri gör</span></button><button class="quicktile" onclick="page('reports');closeModal()"><i>📊</i><b>Raporlar</b><span>Finans özetini aç</span></button></div>`)}
+function quickAction(){openModal(`<div class="quick-modal-head v521-modal-head"><div><span class="eyebrow">Momentum Hub</span><h2>Quick Capture</h2><p class="muted">En sık kullanılan işlemleri tek ekrandan başlat.</p></div></div><div class="quickgrid quickgrid-v521"><button class="quicktile primary" onclick="quickEntry('income')"><i>💰</i><b>Gelir Ekle</b><span>Kira / diğer gelir</span></button><button class="quicktile primary" onclick="quickEntry('expense')"><i>💸</i><b>Gider Ekle</b><span>Ev veya araç gideri</span></button><button class="quicktile" onclick="quickDoc()"><i>📎</i><b>Belge Yükle</b><span>Belgeyi kayıtla bağla</span></button><button class="quicktile" onclick="showOverdueRecords()"><i>⚠️</i><b>Gecikenleri Gör</b><span>Durumları hızlı güncelle</span></button><button class="quicktile" onclick="homeForm()"><i>🏠</i><b>Yeni Ev</b><span>Gayrimenkul ekle</span></button><button class="quicktile" onclick="carForm()"><i>🚗</i><b>Yeni Araç</b><span>Araç ekle</span></button><button class="quicktile" onclick="page('notifications');closeModal()"><i>🔔</i><b>Bildirimler</b><span>Önemli uyarılar</span></button><button class="quicktile" onclick="page('calendar');closeModal()"><i>📅</i><b>Takvim</b><span>Yaklaşan işleri gör</span></button><button class="quicktile" onclick="page('reports');closeModal()"><i>📊</i><b>Raporlar</b><span>Finans özetini aç</span></button></div>`)}
 function quickEntry(type){const opts=[...state.homes.map(h=>`<option value="home:${h.id}">Ev: ${esc(h.name)}</option>`),...state.cars.map(c=>`<option value="car:${c.id}">Araç: ${esc(c.name)}</option>`)].join('');if(!opts)return toast('Önce ev veya araç ekle.');openModal(`<h2>${type==='income'?'Gelir':'Gider'} için varlık seç</h2><select id="quick_asset">${opts}</select><button onclick="const v=$('quick_asset').value.split(':'); entryForm(v[0],v[1],'${type}')">Devam</button>`)}
 function quickDoc(){const opts=[...state.homes.map(h=>`<option value="home:${h.id}">Ev: ${esc(h.name)}</option>`),...state.cars.map(c=>`<option value="car:${c.id}">Araç: ${esc(c.name)}</option>`)].join('');if(!opts)return toast('Önce ev veya araç ekle.');openModal(`<h2>Belge için varlık seç</h2><select id="quick_asset">${opts}</select><button onclick="const v=$('quick_asset').value.split(':'); showDocs(v[0],v[1])">Devam</button>`)}
 function doSearch(q){q=(q||'').toLowerCase().trim();if(!q)return page(currentPage);const rows=[];state.homes.forEach(h=>{if(JSON.stringify(h).toLowerCase().includes(q))rows.push(`<div class="item"><b>🏠 ${esc(h.name)}</b><p class="muted">${esc(h.address||'')}</p><button class="small secondary" onclick="page('homes')">Gayrimenkullere git</button></div>`)});state.cars.forEach(c=>{if(JSON.stringify(c).toLowerCase().includes(q))rows.push(`<div class="item"><b>🚗 ${esc(c.name)}</b><p class="muted">${esc(c.plate||'')}</p><button class="small secondary" onclick="page('cars')">Araçlara git</button></div>`)});state.entries.forEach(e=>{if(JSON.stringify(e).toLowerCase().includes(q))rows.push(entryCard(e,true))});state.documents.forEach(d=>{if(JSON.stringify(d).toLowerCase().includes(q))rows.push(docRow(d))});$('title').textContent='Arama';$('content').innerHTML=`<div class="card"><h2>Arama Sonuçları</h2><p class="muted">${esc(q)} için ${rows.length} sonuç</p><div class="searchResult">${rows.join('')||'<div class="empty">Sonuç bulunamadı.</div>'}</div></div>`}
