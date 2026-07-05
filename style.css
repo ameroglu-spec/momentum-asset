@@ -147,3 +147,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 /* V7 Sprint 2A.5 - Today Dashboard Finance Cards */
 .dashboard-finance{margin-top:16px}.finance-dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 
+/* V7 Sprint 2B.0 - Budget Foundation */
+.finance-budget-list{display:grid;gap:12px}.finance-budget-card{border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:14px;background:rgba(15,23,42,.45)}.finance-budget-card.warn{border-color:rgba(245,158,11,.5)}.finance-budget-card.bad{border-color:rgba(239,68,68,.55)}.finance-budget-bar{height:8px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden;margin:10px 0}.finance-budget-bar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--pri),#22c55e)}.finance-budget-card.warn .finance-budget-bar span{background:#f59e0b}.finance-budget-card.bad .finance-budget-bar span{background:#ef4444}
+

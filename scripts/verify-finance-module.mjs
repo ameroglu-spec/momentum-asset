@@ -39,7 +39,16 @@ const checks = [
   ['dashboard finance uses account summary', app.includes('const s=financeAccountSummary()') || app.includes('const s = financeAccountSummary()')],
   ['dashboard finance uses transaction summary', app.includes('tx=financeTransactionSummary()') || app.includes('const tx = financeTransactionSummary()')],
   ['dashboard finance navigation exists', app.includes("page('finance')")],
-  ['service worker cache bumped to 2A.5', sw.includes('momentum-hub-v7-sprint-2a5-dashboard-finance')],
+
+  ['finance budgets state exists', app.includes('financeBudgets:[]')],
+  ['load() selects finance_budgets', app.includes("sb.from('finance_budgets').select('*').eq('user_id',user.id)")],
+  ['financeBudgetForm exists', app.includes('function financeBudgetForm(')],
+  ['saveFinanceBudget exists', app.includes('async function saveFinanceBudget(')],
+  ['deleteFinanceBudget exists', app.includes('async function deleteFinanceBudget(')],
+  ['financeBudgetActual exists', app.includes('function financeBudgetActual(')],
+  ['financeBudgetProgress exists', app.includes('function financeBudgetProgress(')],
+  ['finance budgets SQL exists', existsSync('sql/finance_budgets.sql')],
+  ['service worker cache bumped to 2B.0', sw.includes('momentum-hub-v7-sprint-2b0-budget-foundation')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

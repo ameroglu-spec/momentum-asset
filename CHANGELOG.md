@@ -1,5 +1,29 @@
 # Changelog
 
+## Sprint 2B.0 — Budget Foundation
+
+### Added
+
+- Added `finance_budgets` loading into app state.
+- Added monthly budget helper functions.
+- Added budget list/cards to Finance screen.
+- Added budget create/edit/delete UI.
+- Added `sql/finance_budgets.sql` with RLS own-user policies.
+
+### Changed
+
+- Updated service worker cache key for Sprint 2B.0.
+- Expanded Finance verification script for budget foundation.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2A.5 — Today Dashboard Finance Cards
 
 ### Added

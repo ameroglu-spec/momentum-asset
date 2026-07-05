@@ -110,7 +110,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2A.5 — Today Dashboard Finance Cards
 
@@ -128,6 +128,30 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 #### Not
 
 - Yeni hesaplama motoru yok; Finance balance engine ozetleri kullaniliyor.
+
+---
+
+## Aktif Sprint
+
+### Sprint 2B.0 — Budget Foundation
+
+**Hedef:** Finance modülüne aylık kategori bütçesi temelini eklemek.
+
+#### Kapsam
+
+- [x] `finance_budgets` SQL dosyasini ekle
+- [x] `state.financeBudgets` alanini ekle
+- [x] `finance_budgets` verisini user scoped yukle
+- [x] Budget helper fonksiyonlarini ekle
+- [x] Finance ekranina Bütçeler bolumunu ekle
+- [x] Bütçe ekleme / duzenleme / silme UI'i ekle
+- [x] Bütçe kartlarinda limit / harcanan / kalan / kullanim goster
+- [x] Service worker cache 2B.0'a guncelle
+
+#### Not
+
+- Harcanan deger `finance_transactions.title` ile kategori eslesmesine dayanir.
+- Supabase SQL Editor'da `sql/finance_budgets.sql` manuel calistirilmalidir.
 
 ---
 

@@ -1,5 +1,34 @@
 # Momentum Hub Release Notes
 
+## Sprint 2B.0 — Budget Foundation
+
+Bu sprint Finance modülüne aylık kategori bütçesi temelini ekler.
+
+### Ozet
+
+- `finance_budgets` tablosu için SQL dosyası eklendi.
+- Finance ekranına `Bütçeler` bölümü eklendi.
+- Kullanıcı aylık kategori bütçesi ekleyebilir, düzenleyebilir ve silebilir.
+- Bütçe kartları limit / harcanan / kalan / kullanım yüzdesi gösterir.
+- Harcanan değer aynı ay completed expense hareketlerinden ve kategori/title eşleşmesinden gelir.
+- Service worker cache anahtarı 2B.0'a güncellendi.
+
+### Supabase SQL
+
+Supabase SQL Editor'da çalıştırılacak dosya:
+
+```text
+sql/finance_budgets.sql
+```
+
+### Onerilen commit mesaji
+
+```text
+feat: add budget foundation
+```
+
+---
+
 ## Sprint 2A.5 — Today Dashboard Finance Cards
 
 Bu sprint Bugün dashboard altına sade Finans Özeti kartlarını ekler.
