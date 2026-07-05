@@ -1,20 +1,17 @@
 # Finance Changelog
 
-## V7.0 Sprint 1A.1
+## V7.0 Sprint 1A.2 — Database Architecture
 
-### Added
-- Finance database schema
-- Finance seed data
-- Finance module documentation
-- Accounts table
-- Transactions table
-- Financings table
-- Goals table
-- Categories table
-- Transfers table
-- Monthly summary table
-- RLS policies
+Added:
 
-### Notes
-- This sprint contains database foundation only.
-- UI development will start in Sprint 1B.
+- Finance performance indexes
+- Finance RLS policy file
+- Finance private storage bucket setup
+- Finance storage access policies
+- Finance database ER diagram
+- Database architecture documentation
+
+Notes:
+
+- Requires Sprint 1A.1 schema and seed files to be applied first.
+- No application UI changes in this sprint.
