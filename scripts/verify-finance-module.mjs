@@ -33,7 +33,13 @@ const checks = [
   ['manual balance sync button exists', app.includes('Manuel bakiyeyi eşitle')],
   ['finance reconciliation note exists', app.includes('Bakiyeler, başlangıç bakiyesi')],
   ['transfer form defaults target to second account', app.includes('defaultToAccountId')],
-  ['service worker cache bumped to 2A.4', sw.includes('momentum-hub-v7-sprint-2a4-finance-polish')],
+
+  ['dashboardFinanceSummary helper exists', app.includes('function dashboardFinanceSummary(')],
+  ['dashboard finance title exists', app.includes('Finans Özeti')],
+  ['dashboard finance uses account summary', app.includes('const s=financeAccountSummary()') || app.includes('const s = financeAccountSummary()')],
+  ['dashboard finance uses transaction summary', app.includes('tx=financeTransactionSummary()') || app.includes('const tx = financeTransactionSummary()')],
+  ['dashboard finance navigation exists', app.includes("page('finance')")],
+  ['service worker cache bumped to 2A.5', sw.includes('momentum-hub-v7-sprint-2a5-dashboard-finance')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

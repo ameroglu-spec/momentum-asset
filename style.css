@@ -144,3 +144,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 /* V7 Sprint 2A.4 - Finance Polish & Reconciliation */
 .finance-note{margin-top:8px}.finance-reconcile{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0;padding:10px;border-radius:12px;background:rgba(148,163,184,.10);font-size:13px}
 
+/* V7 Sprint 2A.5 - Today Dashboard Finance Cards */
+.dashboard-finance{margin-top:16px}.finance-dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+

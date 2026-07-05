@@ -4,7 +4,7 @@ Stable baseline: **V6.0 Stable**
 
 Active phase: **Faz 2 — Finance**
 
-Current sprint: **Sprint 2A.4 — Finance Polish & Reconciliation**
+Current sprint: **Sprint 2A.5 — Today Dashboard Finance Cards**
 
 Target release: **Momentum Hub V7.0 — Finance Stable**
 
@@ -17,5 +17,5 @@ feat: add Finance Transactions UI
 Current implementation milestone:
 
 ```text
-feat: polish finance reconciliation UX
+feat: add finance cards to today dashboard
 ```

@@ -100,6 +100,8 @@ function dashboard(){
         <button class="home-stat clickable" onclick="page('notifications')"><span>Aktif Uyarı</span><b>${overdue.length+upcoming.length}</b><small>Bildirimleri aç</small></button>
       </section>
 
+      ${dashboardFinanceSummary()}
+
       <section class="home-grid-main lower v6-home-grid">
         <div class="home-card priority-card">
           <div class="home-card-head"><span>🎯</span><div><b>Bugünün Öncelikleri</b><small>En fazla 5 aksiyon</small></div></div>
@@ -129,6 +131,12 @@ function dashboard(){
       </section>
     </div>`
 }
+function dashboardFinanceSummary(){
+  const s=financeAccountSummary(),tx=financeTransactionSummary();
+  if(!s.count)return `<section class="card dashboard-finance"><div class="row"><h2 style="flex:1">Finans Özeti</h2><button onclick="page('finance')">Finans’a Git</button></div><p class="muted">Finans özeti için önce hesap ekleyin.</p></section>`;
+  return `<section class="card dashboard-finance"><div class="row"><h2 style="flex:1">Finans Özeti</h2><button onclick="page('finance')">Finans’a Git</button></div><div class="finance-dashboard-grid"><div class="kpi"><span>Toplam Varlık</span><b class="pos">${fmt(s.assets)}</b></div><div class="kpi"><span>Toplam Borç</span><b class="neg">${fmt(s.liabilities)}</b></div><div class="kpi"><span>Net Durum</span><b class="${s.net>=0?'pos':'neg'}">${fmt(s.net)}</b></div><div class="kpi"><span>Bu Ay Gelir</span><b class="pos">${fmt(tx.income)}</b></div><div class="kpi"><span>Bu Ay Gider</span><b class="neg">${fmt(tx.expense)}</b></div><div class="kpi"><span>Net Akış</span><b class="${tx.net>=0?'pos':'neg'}">${fmt(tx.net)}</b></div></div><p class="muted">Bakiyeler Finance modülündeki hesaplanan değerlerden gelir.</p></section>`;
+}
+
 function focusScore(income,exp,upcoming,overdue,todayOpen){
   let score=100;
   score-=Math.min(overdue.length*18,54);

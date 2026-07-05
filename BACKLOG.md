@@ -89,7 +89,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2A.4 — Finance Polish & Reconciliation
 
@@ -107,6 +107,27 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 #### Not
 
 - Bugun dashboard altina finans kartlari Finance fazi sonunda ayri sprintte ele alinacak.
+
+---
+
+## Aktif Sprint
+
+### Sprint 2A.5 — Today Dashboard Finance Cards
+
+**Hedef:** Bugun dashboard altina Finance modulu ozet kartlarini eklemek.
+
+#### Kapsam
+
+- [x] Dashboard Finance Summary helper ekle
+- [x] Toplam varlik / borc / net durum kartlarini goster
+- [x] Bu ay gelir / gider / net akis kartlarini goster
+- [x] Finans hesabi yoksa bos durum goster
+- [x] `Finans’a Git` butonu ekle
+- [x] Service worker cache 2A.5'e guncelle
+
+#### Not
+
+- Yeni hesaplama motoru yok; Finance balance engine ozetleri kullaniliyor.
 
 ---
 

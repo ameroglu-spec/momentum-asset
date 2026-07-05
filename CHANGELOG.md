@@ -1,5 +1,27 @@
 # Changelog
 
+## Sprint 2A.5 — Today Dashboard Finance Cards
+
+### Added
+
+- Added Finance Summary cards to the Today dashboard.
+- Added empty state for users without Finance accounts.
+- Added dashboard navigation button to Finance.
+
+### Changed
+
+- Dashboard Finance cards reuse Finance balance engine summaries.
+- Updated service worker cache key for Sprint 2A.5.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2A.4 — Finance Polish & Reconciliation
 
 ### Added

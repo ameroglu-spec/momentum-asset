@@ -1,5 +1,27 @@
 # Momentum Hub Release Notes
 
+## Sprint 2A.5 — Today Dashboard Finance Cards
+
+Bu sprint Bugün dashboard altına sade Finans Özeti kartlarını ekler.
+
+### Ozet
+
+- Bugün ekranına `Finans Özeti` bölümü eklendi.
+- Toplam varlık, toplam borç ve net durum gösteriliyor.
+- Bu ay gelir, gider ve net akış gösteriliyor.
+- Finans hesabı yoksa boş durum gösteriliyor.
+- `Finans’a Git` butonu eklendi.
+- Kartlar Finance modülündeki mevcut hesaplanan bakiye motorunu kullanıyor.
+- Service worker cache anahtarı 2A.5'e güncellendi.
+
+### Onerilen commit mesaji
+
+```text
+feat: add finance cards to today dashboard
+```
+
+---
+
 ## Sprint 2A.4 — Finance Polish & Reconciliation
 
 Bu sprint Finance ekranını küçük ve kontrollü UX iyileştirmeleriyle cilalar.
