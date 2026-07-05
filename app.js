@@ -4,7 +4,7 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let user=null,currentPage='dashboard';
 let calendarMonth=new Date().toISOString().slice(0,7);
 let theme=localStorage.getItem('ma_theme')||'dark';
-let state={homes:[],cars:[],entries:[],definitions:[],documents:[]};
+let state={homes:[],cars:[],entries:[],definitions:[],documents:[],financeAccounts:[],financeError:null};
 const $=id=>document.getElementById(id);
 const fmt=n=>(Number(n)||0).toLocaleString('tr-TR')+' TL';
 const today=()=>new Date().toISOString().slice(0,10);
@@ -15,12 +15,12 @@ function openModal(html){$('modalbody').innerHTML=html;$('modal').classList.remo
 $('close').onclick=closeModal;
 async function init(){const {data}=await sb.auth.getSession();user=data.session?.user||null;renderAuth();if(user) await load();}
 function renderAuth(){$('auth').classList.toggle('hidden',!!user);$('app').classList.toggle('hidden',!user);$('side').style.display=user?'block':'none';if(user) page(currentPage||'dashboard')}
-async function load(){const [h,c,e,d,doc]=await Promise.all([sb.from('homes').select('*').order('created_at'),sb.from('cars').select('*').order('created_at'),sb.from('entries').select('*').order('date',{ascending:false}),sb.from('definitions').select('*').order('sort_order').order('name'),sb.from('documents').select('*').order('created_at',{ascending:false})]);if(h.error||c.error||e.error||d.error){toast('Supabase SQL eksik olabilir. V5 SQL kodunu çalıştır.');return}state.homes=h.data||[];state.cars=c.data||[];state.entries=e.data||[];state.definitions=d.data||[];state.documents=doc.data||[];await ensureDefaults();page(currentPage||'dashboard')}
+async function load(){const [h,c,e,d,doc,fa]=await Promise.all([sb.from('homes').select('*').order('created_at'),sb.from('cars').select('*').order('created_at'),sb.from('entries').select('*').order('date',{ascending:false}),sb.from('definitions').select('*').order('sort_order').order('name'),sb.from('documents').select('*').order('created_at',{ascending:false}),sb.from('finance_accounts').select('*').order('created_at')]);if(h.error||c.error||e.error||d.error){toast('Supabase SQL eksik olabilir. V5 SQL kodunu çalıştır.');return}state.homes=h.data||[];state.cars=c.data||[];state.entries=e.data||[];state.definitions=d.data||[];state.documents=doc.data||[];state.financeError=fa.error?fa.error.message:null;state.financeAccounts=fa.error?[]:(fa.data||[]);await ensureDefaults();page(currentPage||'dashboard')}
 async function ensureDefaults(){const need=[];Object.entries(DEFAULTS).forEach(([type,names])=>{if(!state.definitions.some(d=>d.type===type))names.forEach((name,i)=>need.push({user_id:user.id,type,name,sort_order:i,active:true}))});if(need.length){await sb.from('definitions').insert(need);const {data}=await sb.from('definitions').select('*').order('sort_order').order('name');state.definitions=data||[]}}
 function defs(type,activeOnly=true){return state.definitions.filter(d=>d.type===type&&(!activeOnly||d.active))}
 function optionHtml(type,selected=''){let arr=defs(type);if(!arr.length)arr=(DEFAULTS[type]||[]).map(name=>({name}));const val=selected||arr[0]?.name||'Diğer';return arr.map(o=>`<option value="${esc(o.name)}" ${o.name===val?'selected':''}>${esc(o.name)}</option>`).join('')}
 function statusClass(s){return ['Ödendi','Alındı'].includes(s)?'ok':(s==='Gecikti'?'bad':'warn')}
-function page(p){currentPage=p;document.querySelectorAll('.nav[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==p));$('title').textContent={dashboard:'Bugün',homes:'Varlıklar',cars:'Araçlar',notifications:'Bildirimler',calendar:'Takvim',documents:'Belgeler',reports:'Raporlar',definitions:'Tanımlar',backup:'Yedek'}[p]||p;updateNotificationBadge();({dashboard,homes,cars,notifications,calendar,documents,reports,definitions,backup}[p])();$('side').classList.remove('open')}
+function page(p){currentPage=p;document.querySelectorAll('.nav[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==p));$('title').textContent={dashboard:'Bugün',homes:'Varlıklar',cars:'Araçlar',finance:'Finans',notifications:'Bildirimler',calendar:'Takvim',documents:'Belgeler',reports:'Raporlar',definitions:'Tanımlar',backup:'Yedek'}[p]||p;updateNotificationBadge();({dashboard,homes,cars,finance,notifications,calendar,documents,reports,definitions,backup}[p])();$('side').classList.remove('open')}
 function sum(arr,type){return arr.filter(e=>e.type===type).reduce((s,e)=>s+Number(e.amount||0),0)}
 function assetValue(){return state.homes.reduce((s,h)=>s+Number(h.current_value||0),0)+state.cars.reduce((s,c)=>s+Number(c.current_value||0),0)}
 function assetValueBreakdown(){return {home:state.homes.reduce((s,h)=>s+Number(h.current_value||0),0),car:state.cars.reduce((s,c)=>s+Number(c.current_value||0),0)}}
@@ -362,6 +362,96 @@ function categoryBars(entries){
 }
 function assetValueTable(){const rows=[...state.homes.map(x=>({t:'Ev',...x})),...state.cars.map(x=>({t:'Araç',...x}))];return rows.length?`<table class="table"><thead><tr><th>Tip</th><th>Ad</th><th>Alış Fiyatı</th><th>Güncel Değer</th><th>Fark</th></tr></thead><tbody>${rows.map(r=>`<tr><td data-label="Tip">${r.t}</td><td data-label="Ad">${esc(r.name)}</td><td data-label="Alış">${fmt(r.purchase_price)}</td><td data-label="Güncel">${fmt(r.current_value)}</td><td data-label="Fark">${fmt(Number(r.current_value||0)-Number(r.purchase_price||0))}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Varlık yok.</p>'}
 function group(arr,key){const m={};arr.forEach(e=>{const k=e[key]||'Diğer';m[k]??={key:k,income:0,expense:0,total:0};m[k][e.type]+=Number(e.amount||0);m[k].total+=Number(e.amount||0)});return Object.values(m).sort((a,b)=>b.total-a.total)}
+function financeAccountTypes(){return [
+  ['cash','Nakit'],['bank','Banka'],['credit_card','Kredi Kartı'],['foreign_currency','Döviz'],['gold','Altın'],['crypto','Kripto'],['investment','Yatırım'],['other','Diğer']
+]}
+function financeAccountTypeLabel(t){return Object.fromEntries(financeAccountTypes())[t]||'Diğer'}
+function financeAccountIcon(t){return {cash:'💵',bank:'🏦',credit_card:'💳',foreign_currency:'🌍',gold:'💰',crypto:'₿',investment:'📈',other:'📌'}[t]||'📌'}
+function financeFmt(n,c='TRY'){return `${(Number(n)||0).toLocaleString('tr-TR')} ${esc(c||'TRY')}`}
+function maskFinanceText(v){const s=(v||'').toString().replace(/\s+/g,'');return s.length>8?`${s.slice(0,4)}••••${s.slice(-4)}`:s}
+function financeAccountSummary(){
+  const active=state.financeAccounts.filter(a=>a.is_active!==false);
+  const tryAccounts=active.filter(a=>(a.currency||'TRY').toUpperCase()==='TRY');
+  const assets=tryAccounts.filter(a=>a.is_asset!==false).reduce((s,a)=>s+Number(a.current_balance||0),0);
+  const liabilities=tryAccounts.filter(a=>a.is_asset===false).reduce((s,a)=>s+Math.abs(Number(a.current_balance||0)),0);
+  const otherCurrencies=[...new Set(active.map(a=>(a.currency||'TRY').toUpperCase()).filter(c=>c!=='TRY'))];
+  return {active,assets,liabilities,net:assets-liabilities,count:active.length,otherCurrencies};
+}
+function finance(){
+  const s=financeAccountSummary();
+  const inactive=state.financeAccounts.filter(a=>a.is_active===false).length;
+  $('content').innerHTML=`<div class="finance-shell">
+    <section class="finance-hero card">
+      <div><span class="eyebrow">Momentum Finance</span><h2>Finansal Durum</h2><p class="muted">Hesaplarını tanımla; nakit, borç ve net durumunu tek ekranda gör.</p></div>
+      <button onclick="financeAccountForm()">+ Hesap Ekle</button>
+    </section>
+    <section class="finance-kpis">
+      <div class="kpi"><span>Aktif Hesap</span><b>${s.count}</b><small>${inactive?inactive+' pasif hesap':''}</small></div>
+      <div class="kpi"><span>Toplam Nakit / Varlık</span><b class="pos">${fmt(s.assets)}</b><small>Sadece TRY hesaplar</small></div>
+      <div class="kpi"><span>Toplam Borç</span><b class="neg">${fmt(s.liabilities)}</b><small>Sadece TRY borçlar</small></div>
+      <div class="kpi"><span>Net Hesap Durumu</span><b class="${s.net>=0?'pos':'neg'}">${fmt(s.net)}</b><small>${s.otherCurrencies.length?'Döviz ayrı: '+s.otherCurrencies.join(', '):'Varlık - Borç'}</small></div>
+    </section>
+    ${state.financeError?`<section class="card danger"><b>Finance verisi yüklenemedi:</b> ${esc(state.financeError)}</section>`:''}
+    <section class="finance-grid">${s.active.map(financeAccountCard).join('')||'<div class="card empty">Henüz finans hesabı yok. İlk nakit, banka veya kredi kartı hesabını ekle.</div>'}</section>
+    ${inactive?`<section class="card"><h2>Pasif Hesaplar</h2><div class="finance-passive-list">${state.financeAccounts.filter(a=>a.is_active===false).map(financeAccountMini).join('')}</div></section>`:''}
+  </div>`;
+}
+function financeAccountCard(a){
+  const type=financeAccountTypeLabel(a.account_type);
+  return `<article class="finance-account-card ${a.is_asset===false?'liability':'asset'}">
+    <div class="finance-account-top"><div><span class="finance-account-icon">${financeAccountIcon(a.account_type)}</span><h3>${esc(a.name)}</h3><p>${esc(type)} · ${esc(a.currency||'TRY')}</p></div><span class="badge ${a.is_asset===false?'bad':'ok'}">${a.is_asset===false?'Borç':'Varlık'}</span></div>
+    <div class="finance-account-balance"><span>Güncel Bakiye</span><b class="${a.is_asset===false?'neg':'pos'}">${financeFmt(a.current_balance,a.currency||'TRY')}</b></div>
+    <div class="finance-account-meta"><span>${esc(a.institution||'Kurum yok')}</span><span>${a.card_last4?'**** '+esc(a.card_last4):esc(maskFinanceText(a.iban)||'')}</span></div>
+    <p class="muted">${esc(a.description||'')}</p>
+    <div class="asset-actions-v6"><button onclick="financeAccountForm('${a.id}')">Düzenle</button><button class="secondary" onclick="archiveFinanceAccount('${a.id}',false)">Pasife Al</button></div>
+  </article>`;
+}
+function financeAccountMini(a){return `<div class="pill inactive"><span>${financeAccountIcon(a.account_type)} ${esc(a.name)} · ${financeFmt(a.current_balance,a.currency||'TRY')}</span><button class="small secondary" onclick="archiveFinanceAccount('${a.id}',true)">Aktif Et</button></div>`}
+function financeAccountTypeOptions(selected='bank'){return financeAccountTypes().map(([value,label])=>`<option value="${value}" ${value===selected?'selected':''}>${label}</option>`).join('')}
+function financeAccountForm(id=''){
+  const a=state.financeAccounts.find(x=>x.id===id)||{account_type:'bank',currency:'TRY',is_asset:true,is_active:true};
+  openModal(`<h2>${id?'Hesap Düzenle':'Finans Hesabı Ekle'}</h2>
+    <label>Hesap Adı</label><input id="fa_name" placeholder="Örn: İş Bankası, Nakit, Kredi Kartı" value="${esc(a.name)}">
+    <div class="split"><div><label>Hesap Tipi</label><select id="fa_account_type">${financeAccountTypeOptions(a.account_type)}</select></div><div><label>Para Birimi</label><input id="fa_currency" value="${esc(a.currency||'TRY')}"></div></div>
+    <div class="split"><div><label>Başlangıç Bakiye</label><input id="fa_initial_balance" type="number" value="${a.initial_balance??0}"></div><div><label>Güncel Bakiye</label><input id="fa_current_balance" type="number" value="${a.current_balance??0}"></div></div>
+    <label>Hesap Niteliği</label><select id="fa_is_asset"><option value="true" ${a.is_asset!==false?'selected':''}>Varlık / Nakit</option><option value="false" ${a.is_asset===false?'selected':''}>Borç / Kredi Kartı</option></select>
+    <div class="split"><input id="fa_institution" placeholder="Kurum / Banka" value="${esc(a.institution)}"><input id="fa_card_last4" maxlength="4" placeholder="Kart son 4 hane" value="${esc(a.card_last4)}"></div>
+    <input id="fa_iban" placeholder="IBAN / hesap notu" value="${esc(a.iban)}">
+    <input id="fa_credit_limit" type="number" placeholder="Kredi kartı limiti" value="${a.credit_limit||''}">
+    <textarea id="fa_description" placeholder="Açıklama">${esc(a.description)}</textarea>
+    <button onclick="saveFinanceAccount('${id}')">Kaydet</button>`);
+}
+async function saveFinanceAccount(id=''){
+  const row={
+    user_id:user.id,
+    name:$('fa_name').value.trim(),
+    account_type:$('fa_account_type').value,
+    currency:($('fa_currency').value||'TRY').trim().toUpperCase(),
+    initial_balance:Number($('fa_initial_balance').value)||0,
+    current_balance:Number($('fa_current_balance').value)||0,
+    is_asset:$('fa_is_asset').value==='true',
+    institution:$('fa_institution').value.trim()||null,
+    iban:$('fa_iban').value.trim()||null,
+    card_last4:$('fa_card_last4').value.trim()||null,
+    credit_limit:$('fa_credit_limit').value===''?null:Number($('fa_credit_limit').value),
+    description:$('fa_description').value.trim()||null,
+    is_active:true
+  };
+  if(!row.name)return toast('Hesap adı gerekli.');
+  if(!/^[A-Z0-9]{3,5}$/.test(row.currency))return toast('Para birimi 3-5 karakter olmalı. Örn: TRY, USD, EUR, XAU');
+  if(row.card_last4&&!/^\d{4}$/.test(row.card_last4))return toast('Kart son 4 hane sadece 4 rakam olmalı.');
+  if(row.is_asset===false)row.current_balance=Math.abs(row.current_balance);
+  if(row.credit_limit!==null&&row.credit_limit<0)return toast('Kredi limiti negatif olamaz.');
+  const q=id?sb.from('finance_accounts').update(row).eq('id',id).eq('user_id',user.id):sb.from('finance_accounts').insert(row);
+  const {error}=await q;
+  if(error)return toast(error.message);
+  closeModal();toast('Finans hesabı kaydedildi.');await load();page('finance');
+}
+async function archiveFinanceAccount(id,isActive){
+  const {error}=await sb.from('finance_accounts').update({is_active:isActive}).eq('id',id).eq('user_id',user.id);
+  if(error)return toast(error.message);
+  toast(isActive?'Hesap aktif edildi.':'Hesap pasife alındı.');await load();page('finance');
+}
 function definitions(){const labels={home_expense:'Ev Gider Kategorileri',car_expense:'Araç Gider Kategorileri',income:'Gelir Tipleri',status:'Ödeme Durumları',doc_type:'Belge Tipleri'};$('content').innerHTML=`<div class="defgrid">${Object.keys(labels).map(type=>`<div class="card"><div class="row"><h2 style="flex:1">${labels[type]}</h2><button onclick="defForm('${type}')">Ekle</button></div>${defs(type,false).map(d=>`<div class="pill ${d.active?'':'inactive'}"><span>${esc(d.name)} ${d.active?'':'(pasif)'}</span><span><button class="small secondary" onclick="defForm('${type}','${d.id}')">Düzenle</button> <button class="small secondary" onclick="toggleDef('${d.id}',${!d.active})">${d.active?'Pasife Al':'Aktif Et'}</button> <button class="small danger" onclick="deleteDef('${d.id}')">Sil</button></span></div>`).join('')}</div>`).join('')}</div>`}
 function documents(){const docs=state.documents;$('content').innerHTML=`<div class="card"><div class="row"><h2 style="flex:1">Belge Merkezi</h2><button class="secondary" onclick="quickDoc()">Belge Yükle</button></div><p class="muted">Tüm ev ve araç belgeleri tek ekranda.</p>${docs.map(d=>docRow(d)).join('')||'<div class="empty">Henüz belge yok.</div>'}</div>`}
 function docRow(d){const asset=d.home_id?state.homes.find(h=>h.id===d.home_id):state.cars.find(c=>c.id===d.car_id);const e=state.entries.find(x=>x.id===d.entry_id);return `<div class="doc"><div><b>${esc(d.doc_type||'Belge')}</b><br><span>${esc(asset?.name||'Varlık yok')}</span><br><span class="muted">${esc(d.file_name)}${e?' — '+esc(entryLabel(e)):' — Genel belge'}</span></div><div><button class="small secondary" onclick="openDoc('${d.file_path}')">Aç</button> <button class="small danger" onclick="deleteDoc('${d.id}','${d.file_path}')">Sil</button></div></div>`}

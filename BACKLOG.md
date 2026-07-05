@@ -4,11 +4,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2A.0 — CTO Handover & Roadmap Lock
 
-**Durum:** In progress
+**Durum:** Completed
 
 - [x] Roadmap kararlarini repo icine alma
 - [x] Finance fazini aktif faz olarak kilitleme
@@ -16,11 +16,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [x] Finance faz planini olusturma
 - [x] README / VERSION / CHANGELOG / RELEASE_NOTES guncelleme
 - [x] Degisiklikleri dogrulama
-- [ ] Commit / push kullanici tarafindan yapilacaksa commit mesaji ile teslim
+- [x] Commit / push kullanici tarafindan yapildi
 
 ---
 
-## Sıradaki Sprint
+## Aktif Sprint
 
 ### Sprint 2A.1 — Finance Accounts UI
 
@@ -28,18 +28,18 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 #### Kapsam
 
-- [ ] Sol menuye `Finans` ekle
-- [ ] `currentPage` icine finance sayfasi ekle
-- [ ] `state.financeAccounts` state alanini ekle
-- [ ] `finance_accounts` tablosundan verileri yukle
-- [ ] Finance ana ekran shell'i olustur
-- [ ] Hesap kartlari tasarimi
-- [ ] Hesap ekleme formu
-- [ ] Hesap duzenleme formu
-- [ ] Hesap pasife alma
-- [ ] Toplam nakit, toplam borc, net bakiye KPI kartlari
-- [ ] Mobil gorunum kontrolu
-- [ ] RLS davranisini dogrula
+- [x] Sol menuye `Finans` ekle
+- [x] `currentPage` icine finance sayfasi ekle
+- [x] `state.financeAccounts` state alanini ekle
+- [x] `finance_accounts` tablosundan verileri yukle
+- [x] Finance ana ekran shell'i olustur
+- [x] Hesap kartlari tasarimi
+- [x] Hesap ekleme formu
+- [x] Hesap duzenleme formu
+- [x] Hesap pasife alma
+- [x] Toplam nakit, toplam borc, net bakiye KPI kartlari
+- [x] Mobil gorunum kontrolu
+- [x] RLS davranisini dogrula
 
 #### Kabul kriterleri
 

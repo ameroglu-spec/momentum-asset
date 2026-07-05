@@ -1,5 +1,30 @@
 # Changelog
 
+## Sprint 2A.1 — Finance Accounts UI
+
+### Added
+
+- Added `Finans` navigation item.
+- Added Finance Accounts dashboard shell.
+- Added `finance_accounts` loading into app state.
+- Added active account list, passive account list, and finance KPI cards.
+- Added account create/edit form for cash, bank, credit card, FX, gold, crypto, investment, and other accounts.
+- Added account archive/reactivate flow via `is_active`.
+- Added `scripts/verify-finance-accounts.mjs` quality check.
+
+### Changed
+
+- Updated service worker cache key to force clients to pick up new Finance UI assets.
+- Updated README, VERSION, and backlog sprint state.
+
+### Verification
+
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- Browser smoke test on local static server
+
+---
+
 ## Sprint 2A.0 — CTO Handover & Roadmap Lock
 
 ### Added

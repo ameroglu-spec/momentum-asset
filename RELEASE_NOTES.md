@@ -1,5 +1,50 @@
 # Momentum Hub Release Notes
 
+## Sprint 2A.1 — Finance Accounts UI
+
+Bu sprint Finance fazinin ilk kullanici arayuzu adimidir. Amac, kullanicinin Finans menusune girip hesaplarini tanimlamaya baslamasidir.
+
+### Ozet
+
+- Sol menuye `Finans` eklendi.
+- Finance ana ekraninda KPI kartlari olusturuldu.
+- `finance_accounts` tablosundan hesaplar yukleniyor.
+- Hesap ekleme / duzenleme formu eklendi.
+- Hesap pasife alma ve tekrar aktif etme eklendi.
+- Mobil uyumlu Finance hesap kartlari eklendi.
+- Service worker cache anahtari guncellendi.
+- Basit dogrulama scripti eklendi: `scripts/verify-finance-accounts.mjs`
+
+### Guncellenen dosyalar
+
+```text
+index.html
+app.js
+style.css
+sw.js
+README.md
+VERSION.md
+CHANGELOG.md
+RELEASE_NOTES.md
+BACKLOG.md
+scripts/verify-finance-accounts.mjs
+```
+
+### Testler
+
+```text
+node scripts/verify-finance-accounts.mjs
+node --check app.js
+```
+
+### Onerilen commit mesaji
+
+```text
+feat: add Finance Accounts UI
+```
+
+---
+
 ## Sprint 2A.0 — CTO Handover & Roadmap Lock
 
 Bu sprint uygulama davranisini degistirmez. Amac, ChatGPT konusmasinda olusan CTO kararlarini repo icinde kalici dokumanlara donusturmek ve Finance fazini resmi olarak baslatmaktir.
