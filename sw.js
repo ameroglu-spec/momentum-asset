@@ -1,10 +1,10 @@
-const CACHE='momentum-hub-v7-sprint-2a2-finance-transactions';
-const APP_SHELL=['./','./index.html','./style.css','./app.js','./manifest.webmanifest'];
+const CACHE='momentum-hub-v7-sprint-2a3-balance-transfers';
+const APP_SHELL=['/','/index.html','/style.css','/app.js','/manifest.webmanifest'];
 function shouldCache(req){
   const url=new URL(req.url);
   if(url.origin!==location.origin)return false;
   if(req.method!=='GET')return false;
-  return APP_SHELL.some(asset=>url.pathname.endsWith(asset.replace('./','/')))||url.pathname==='/'||url.pathname.endsWith('/index.html');
+  return APP_SHELL.includes(url.pathname);
 }
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP_SHELL)))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});

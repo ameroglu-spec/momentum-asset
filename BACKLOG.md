@@ -37,7 +37,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2A.2 — Finance Transactions UI
 
@@ -64,6 +64,31 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
+## Aktif Sprint
+
+### Sprint 2A.3 — Balance Engine + Transfers
+
+**Hedef:** Hesaplanan bakiye motorunu kurmak ve hesaplar arası transferleri eklemek.
+
+#### Kapsam
+
+- [x] `state.financeTransfers` alanini ekle
+- [x] `finance_transfers` tablosundan verileri yukle
+- [x] `financeTransactionEffect` ve `financeTransferEffect` fonksiyonlarini ekle
+- [x] `financeAccountBalance` ile hesaplanan bakiye motorunu ekle
+- [x] Hesap kartlarini hesaplanan bakiye / manuel bakiye farki ile guncelle
+- [x] Transfer ekleme / duzenleme / silme UI'i ekle
+- [x] Transfer listesini Finance ekranina ekle
+- [x] Transfer update/delete islemlerinde `user_id` filtresi kullan
+- [x] Transfer account ownership SQL guard dosyasini ekle
+- [x] Service worker cache 2A.3'e guncelle
+
+#### Bilincli karar
+
+- `current_balance` otomatik overwrite edilmiyor; bakiye `initial_balance + completed transactions + transfers` olarak hesaplaniyor.
+
+---
+
 ## Finance Faz Backlog
 
 ### Database / Architecture
@@ -80,7 +105,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 - [x] Finance Accounts UI
 - [x] Finance Transactions UI
-- [ ] Transfers UI
+- [x] Transfers UI
 - [ ] Budget UI
 - [ ] Finance Dashboard
 - [ ] Finance Reports

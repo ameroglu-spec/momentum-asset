@@ -1,5 +1,37 @@
 # Changelog
 
+## Sprint 2A.3 — Balance Engine + Transfers
+
+### Added
+
+- Added `finance_transfers` loading into app state.
+- Added ledger-style balance engine based on initial balance, completed transactions, and transfers.
+- Added transfer create/edit/delete UI.
+- Added transfer list to Finance screen.
+- Added calculated balance, manual balance, and balance delta display on account cards.
+- Added `sql/finance_transfer_account_guard.sql` for transfer account ownership hardening.
+
+### Changed
+
+- Finance KPI cards now use calculated balances instead of raw `current_balance`.
+- Service worker cache key updated for Sprint 2A.3 while keeping same-origin static app shell caching only.
+- Finance verification script expanded for transfers and balance engine checks.
+
+### Notes
+
+- `current_balance` is not automatically overwritten. Calculated balance remains ledger-derived.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+- Browser smoke test
+- Public RLS REST check
+
+---
+
 ## Sprint 2A.2 — Finance Transactions UI
 
 ### Added

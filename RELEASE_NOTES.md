@@ -1,5 +1,65 @@
 # Momentum Hub Release Notes
 
+## Sprint 2A.3 — Balance Engine + Transfers
+
+Bu sprint Finance modülüne hesaplanan bakiye motoru ve hesaplar arası transferleri ekler.
+
+### Ozet
+
+- `finance_transfers` tablosu uygulamaya bağlandı.
+- Hesaplanan bakiye motoru eklendi.
+- Hesap kartları artık `Başlangıç + gerçekleşen hareketler + transferler` mantığıyla hesaplanan bakiyeyi gösteriyor.
+- Manuel bakiye ile hesaplanan bakiye farkı gösteriliyor.
+- Transfer ekleme / düzenleme / silme eklendi.
+- Transfer listesi Finance ekranına eklendi.
+- Toplam varlık, toplam borç ve net durum hesaplanan bakiye ile güncellendi.
+- Transfer account ownership SQL guard dosyası eklendi: `sql/finance_transfer_account_guard.sql`
+- Service worker cache anahtarı 2A.3'e güncellendi.
+
+### Bilincli karar
+
+`current_balance` otomatik overwrite edilmiyor. Finansal durum, kayıt defteri mantığıyla yeniden hesaplanabilir kalıyor.
+
+### Guncellenen dosyalar
+
+```text
+app.js
+style.css
+sw.js
+README.md
+VERSION.md
+CHANGELOG.md
+RELEASE_NOTES.md
+BACKLOG.md
+scripts/verify-finance-module.mjs
+sql/finance_transfer_account_guard.sql
+```
+
+### Testler
+
+```text
+node scripts/verify-finance-module.mjs
+node scripts/verify-finance-accounts.mjs
+node --check app.js
+node --check sw.js
+```
+
+### Supabase SQL
+
+Supabase SQL Editor'da çalıştırılacak dosya:
+
+```text
+sql/finance_transfer_account_guard.sql
+```
+
+### Onerilen commit mesaji
+
+```text
+feat: add balance engine and transfers
+```
+
+---
+
 ## Sprint 2A.2 — Finance Transactions UI
 
 Bu sprint Finance modülüne gelir/gider hareketleri ekler. Kullanıcı artık tanımladığı finans hesaplarına hareket bağlayabilir, listeleyebilir, düzenleyebilir ve silebilir.

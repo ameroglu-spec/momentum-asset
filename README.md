@@ -8,7 +8,7 @@ Momentum Hub; ev, arac, gelir/gider, belge, takvim, bildirim, rapor ve finansal 
 
 - Stable baseline: **V6.0 Stable**
 - Active phase: **Faz 2 — Finance**
-- Current sprint: **Sprint 2A.2 — Finance Transactions UI**
+- Current sprint: **Sprint 2A.3 — Balance Engine + Transfers**
 - Target: **Momentum Hub V7.0 — Finance Stable**
 
 ## Core Modules
