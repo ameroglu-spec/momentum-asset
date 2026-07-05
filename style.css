@@ -141,3 +141,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 /* V7 Sprint 2A.3 - Balance Engine + Transfers */
 .finance-transaction-card.transfer{border-left:4px solid var(--pri)}.finance-account-balance small{display:block;color:var(--muted);font-size:12px;margin-top:5px}.finance-tabs button{white-space:nowrap}
 
+/* V7 Sprint 2A.4 - Finance Polish & Reconciliation */
+.finance-note{margin-top:8px}.finance-reconcile{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0;padding:10px;border-radius:12px;background:rgba(148,163,184,.10);font-size:13px}
+

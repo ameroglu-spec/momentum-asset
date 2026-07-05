@@ -1,5 +1,26 @@
 # Momentum Hub Release Notes
 
+## Sprint 2A.4 — Finance Polish & Reconciliation
+
+Bu sprint Finance ekranını küçük ve kontrollü UX iyileştirmeleriyle cilalar.
+
+### Ozet
+
+- Hesap kartlarında hesaplanan bakiye / manuel bakiye / fark bilgisi netleştirildi.
+- Fark varsa `Manuel bakiyeyi eşitle` aksiyonu eklendi.
+- Finance üst alanına bakiye hesaplama mantığını açıklayan kısa not eklendi.
+- Transfer formu, yeni kayıt açılırken kaynak ve hedef hesapları mümkünse farklı seçiyor.
+- Para birimi uyumsuzluk mesajları sadeleştirildi.
+- Service worker cache anahtarı 2A.4'e güncellendi.
+
+### Onerilen commit mesaji
+
+```text
+feat: polish finance reconciliation UX
+```
+
+---
+
 ## Sprint 2A.3 — Balance Engine + Transfers
 
 Bu sprint Finance modülüne hesaplanan bakiye motoru ve hesaplar arası transferleri ekler.

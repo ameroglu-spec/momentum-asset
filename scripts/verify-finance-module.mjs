@@ -27,8 +27,13 @@ const checks = [
   ['finance balance engine exists', app.includes('function financeAccountBalance(') && app.includes('function financeTransactionEffect(') && app.includes('function financeTransferEffect(')],
   ['finance transaction writes are user scoped', app.includes("sb.from('finance_transactions').update(row).eq('id',id).eq('user_id',user.id)") && app.includes("sb.from('finance_transactions').delete().eq('id',id).eq('user_id',user.id)")],
   ['finance transfer writes are user scoped', app.includes("sb.from('finance_transfers').update(row).eq('id',id).eq('user_id',user.id)") && app.includes("sb.from('finance_transfers').delete().eq('id',id).eq('user_id',user.id)")],
-  ['service worker cache bumped to 2A.3', sw.includes('momentum-hub-v7-sprint-2a3-balance-transfers')],
   ['transfer guard SQL exists', existsSync('sql/finance_transfer_account_guard.sql')],
+
+  ['syncFinanceAccountBalance helper exists', app.includes('function syncFinanceAccountBalance(')],
+  ['manual balance sync button exists', app.includes('Manuel bakiyeyi eşitle')],
+  ['finance reconciliation note exists', app.includes('Bakiyeler, başlangıç bakiyesi')],
+  ['transfer form defaults target to second account', app.includes('defaultToAccountId')],
+  ['service worker cache bumped to 2A.4', sw.includes('momentum-hub-v7-sprint-2a4-finance-polish')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

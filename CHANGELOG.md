@@ -1,5 +1,28 @@
 # Changelog
 
+## Sprint 2A.4 — Finance Polish & Reconciliation
+
+### Added
+
+- Added manual balance reconciliation action for Finance accounts.
+- Added clearer calculated/manual/delta display on account cards.
+- Added Finance balance calculation note.
+
+### Changed
+
+- Transfer form now defaults source and target accounts to different accounts when possible.
+- Updated Finance currency mismatch messages.
+- Updated service worker cache key for Sprint 2A.4.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2A.3 — Balance Engine + Transfers
 
 ### Added

@@ -1,4 +1,4 @@
-const CACHE='momentum-hub-v7-sprint-2a3-balance-transfers';
+const CACHE='momentum-hub-v7-sprint-2a4-finance-polish';
 const APP_SHELL=['/','/index.html','/style.css','/app.js','/manifest.webmanifest'];
 function shouldCache(req){
   const url=new URL(req.url);

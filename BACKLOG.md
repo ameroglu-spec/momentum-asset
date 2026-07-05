@@ -64,7 +64,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2A.3 — Balance Engine + Transfers
 
@@ -86,6 +86,27 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 #### Bilincli karar
 
 - `current_balance` otomatik overwrite edilmiyor; bakiye `initial_balance + completed transactions + transfers` olarak hesaplaniyor.
+
+---
+
+## Aktif Sprint
+
+### Sprint 2A.4 — Finance Polish & Reconciliation
+
+**Hedef:** Finance ekraninda bakiye mutabakati ve küçük UX pürüzlerini minimal diff ile iyileştirmek.
+
+#### Kapsam
+
+- [x] Hesap kartinda hesaplanan / manuel / fark bilgisini netlestir
+- [x] Manuel bakiyeyi hesaplanan bakiyeye esitle aksiyonu ekle
+- [x] Transfer formunda kaynak/hedef default secimini farkli hesaplara ayarla
+- [x] Para birimi uyumsuzluk mesajlarini sadelestir
+- [x] Finance ust alanina bakiye hesaplama notu ekle
+- [x] Service worker cache 2A.4'e guncelle
+
+#### Not
+
+- Bugun dashboard altina finans kartlari Finance fazi sonunda ayri sprintte ele alinacak.
 
 ---
 
