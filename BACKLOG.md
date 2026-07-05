@@ -4,7 +4,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Tamamlanan Sprint
+## Tamamlanan Sprintler
 
 ### Sprint 2A.0 — CTO Handover & Roadmap Lock
 
@@ -18,15 +18,9 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [x] Degisiklikleri dogrulama
 - [x] Commit / push kullanici tarafindan yapildi
 
----
-
-## Aktif Sprint
-
 ### Sprint 2A.1 — Finance Accounts UI
 
-**Hedef:** Kullanici Finans ekraninda hesaplarini tanimlayabilsin ve toplam durumunu gorebilsin.
-
-#### Kapsam
+**Durum:** Completed
 
 - [x] Sol menuye `Finans` ekle
 - [x] `currentPage` icine finance sayfasi ekle
@@ -41,13 +35,32 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [x] Mobil gorunum kontrolu
 - [x] RLS davranisini dogrula
 
-#### Kabul kriterleri
+---
 
-- Kullanici Finans menüsunu gorur.
-- Hesap ekler, duzenler ve pasife alir.
-- Hesaplar kullanici bazli izole olur.
-- Toplam kartlar dogru hesaplanir.
-- Mevcut Asset fonksiyonlari bozulmaz.
+## Aktif Sprint
+
+### Sprint 2A.2 — Finance Transactions UI
+
+**Hedef:** Kullanici finans hesaplarina gelir/gider hareketleri ekleyebilsin, listeleyebilsin, duzenleyebilsin ve silebilsin.
+
+#### Kapsam
+
+- [x] `state.financeTransactions` alanini ekle
+- [x] `finance_transactions` tablosundan verileri yukle
+- [x] Gelir/gider hareket formu ekle
+- [x] Hareket listeleme ve filtreleme ekle
+- [x] Bu ay gelir/gider/net akış ozeti ekle
+- [x] Hareket duzenleme ve silme ekle
+- [x] Client-side `user_id` filtrelerini kullan
+- [x] Service worker cache 2A.2'ye guncelle
+- [x] Finance module verify scripti ekle
+- [x] Service worker cache'ini sadece statik app shell ile sinirla
+- [x] Transaction-account sahiplik guard SQL dosyasini ekle
+
+#### Kapsam disi
+
+- Otomatik bakiye motoru Sprint 2A.3'e kaldi
+- Transfer muhasebe etkisi Sprint 2A.3'e kaldi
 
 ---
 
@@ -65,8 +78,8 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ### UI / Product
 
-- [ ] Finance Accounts UI
-- [ ] Finance Transactions UI
+- [x] Finance Accounts UI
+- [x] Finance Transactions UI
 - [ ] Transfers UI
 - [ ] Budget UI
 - [ ] Finance Dashboard
@@ -101,4 +114,3 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [ ] Health modulu plan dokumani
 - [ ] Knowledge Hub plan dokumani
 - [ ] Calendar 360 plan dokumani
-- [ ] AI Copilot veri gereksinimleri dokumani

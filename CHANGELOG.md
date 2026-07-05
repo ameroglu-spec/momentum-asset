@@ -1,5 +1,40 @@
 # Changelog
 
+## Sprint 2A.2 — Finance Transactions UI
+
+### Added
+
+- Added `finance_transactions` loading into app state.
+- Added Finance transaction create/edit form for income and expense records.
+- Added transaction list with account/type filters.
+- Added monthly income, expense, net flow, and total transaction KPI cards.
+- Added transaction delete flow scoped by `user_id`.
+- Added `scripts/verify-finance-module.mjs` quality check.
+- Added `sql/finance_transaction_account_guard.sql` for account ownership hardening.
+
+### Changed
+
+- Updated Finance screen to show account and transaction management together.
+- Updated service worker cache key for Sprint 2A.2.
+- Hardened service worker caching to same-origin static app shell only.
+- Added client-side `user_id` filters on Finance account/transaction reads.
+- Updated README, VERSION, RELEASE_NOTES, and BACKLOG for current sprint.
+
+### Notes
+
+- Automatic balance engine and transfer accounting remain planned for Sprint 2A.3.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+- Browser smoke test
+- Public RLS REST check
+
+---
+
 ## Sprint 2A.1 — Finance Accounts UI
 
 ### Added

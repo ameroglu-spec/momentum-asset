@@ -4,18 +4,18 @@ Stable baseline: **V6.0 Stable**
 
 Active phase: **Faz 2 — Finance**
 
-Current sprint: **Sprint 2A.1 — Finance Accounts UI**
+Current sprint: **Sprint 2A.2 — Finance Transactions UI**
 
 Target release: **Momentum Hub V7.0 — Finance Stable**
 
 Latest completed technical milestone:
 
 ```text
-chore: lock roadmap for Finance phase
+feat: add Finance Accounts UI
 ```
 
 Current implementation milestone:
 
 ```text
-feat: add Finance Accounts UI
+feat: add Finance Transactions UI
 ```

@@ -1,5 +1,60 @@
 # Momentum Hub Release Notes
 
+## Sprint 2A.2 — Finance Transactions UI
+
+Bu sprint Finance modülüne gelir/gider hareketleri ekler. Kullanıcı artık tanımladığı finans hesaplarına hareket bağlayabilir, listeleyebilir, düzenleyebilir ve silebilir.
+
+### Ozet
+
+- `finance_transactions` tablosu uygulamaya bağlandı.
+- Finans ekranına `+ Hareket Ekle` aksiyonu eklendi.
+- Gelir/gider hareket formu eklendi.
+- Hareket listesi ve hesap/tip filtreleri eklendi.
+- Bu ay gelir, gider ve net akış KPI kartları eklendi.
+- Hareket düzenleme ve silme eklendi.
+- Service worker cache anahtari guncellendi.
+- Genel Finance doğrulama scripti eklendi: `scripts/verify-finance-module.mjs`
+- Service worker artik sadece ayni origin statik app shell dosyalarini cache'liyor.
+- Finance transaction/account okumalari client tarafinda `user_id` ile filtreleniyor.
+- Transaction kaydinin baska kullanici hesabina baglanmasini engelleyen SQL hardening dosyasi eklendi.
+
+### Bilincli kapsam disi
+
+- Otomatik bakiye motoru Sprint 2A.3 kapsamına bırakıldı.
+- Transfer muhasebe etkisi Sprint 2A.3 kapsamına bırakıldı.
+
+### Guncellenen dosyalar
+
+```text
+app.js
+style.css
+sw.js
+README.md
+VERSION.md
+CHANGELOG.md
+RELEASE_NOTES.md
+BACKLOG.md
+scripts/verify-finance-module.mjs
+sql/finance_transaction_account_guard.sql
+```
+
+### Testler
+
+```text
+node scripts/verify-finance-module.mjs
+node scripts/verify-finance-accounts.mjs
+node --check app.js
+node --check sw.js
+```
+
+### Onerilen commit mesaji
+
+```text
+feat: add Finance Transactions UI
+```
+
+---
+
 ## Sprint 2A.1 — Finance Accounts UI
 
 Bu sprint Finance fazinin ilk kullanici arayuzu adimidir. Amac, kullanicinin Finans menusune girip hesaplarini tanimlamaya baslamasidir.
