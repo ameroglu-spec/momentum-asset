@@ -92,7 +92,17 @@ const checks = [
   ['finance reports show financing payment report', app.includes('Finansman/Kredi Ödeme Raporu')],
   ['finance reports show budget actual report', app.includes('Bütçe / Gerçekleşen')],
   ['finance page includes reports panel', app.includes('finance_reports_panel')],
-  ['service worker cache bumped to 2E', sw.includes('momentum-hub-v7-sprint-2e-finance-reports')],
+
+  ['finance calendar items helper exists', app.includes('function financeCalendarItems(')],
+  ['finance calendar summary helper exists', app.includes('function financeCalendarSummary(')],
+  ['finance notification candidates helper exists', app.includes('function financeNotificationCandidates(')],
+  ['finance notifications integrated into buildNotifications', app.includes('financeNotificationCandidates().forEach')],
+  ['finance notification badge includes finance candidates', app.includes('financeNotificationCandidates().length')],
+  ['finance calendar includes installment events', app.includes('finance-installment') && app.includes('Finansman Taksiti')],
+  ['finance calendar shows finance summary card', app.includes('finance-calendar-summary') && app.includes('Finans Takvimi Özeti')],
+  ['finance notification text for 7 days exists', app.includes('7 gün içinde finansman ödemesi var')],
+  ['finance overdue notification text exists', app.includes('Gecikmiş finansman taksiti var')],
+  ['service worker cache bumped to 2F', sw.includes('momentum-hub-v7-sprint-2f-finance-calendar-notifications')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

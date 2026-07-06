@@ -27,6 +27,9 @@ function assetValueBreakdown(){return {home:state.homes.reduce((s,h)=>s+Number(h
 
 function isClosedStatus(s){return ['Ödendi','Alındı','İptal'].includes(s)}
 function getOverdue(){return state.entries.filter(e=>!isClosedStatus(e.status)&&new Date(e.date)<new Date(today())).sort((a,b)=>a.date.localeCompare(b.date))}
+function financeCalendarItems(key){return state.financeFinancingInstallments.filter(i=>String(i.due_date||'').slice(0,7)===key).map(i=>{const plan=state.financeFinancingPlans.find(p=>p.id===i.financing_plan_id);const st=financeInstallmentEffectiveStatus(i);return {...i,type:'finance-installment',date:i.due_date,category:'Finansman Taksiti',amount:Number(i.amount||0),status:st,plan,provider_name:plan?.provider_name||'Finansman'}}).sort((a,b)=>(a.date||'').localeCompare(b.date||''))}
+function financeCalendarSummary(items){const open=items.filter(i=>!['paid','cancelled'].includes(i.status));const overdue=items.filter(i=>i.status==='overdue');const paid=items.filter(i=>i.status==='paid');return {count:items.length,open:open.length,overdue:overdue.length,paid:paid.length,total:items.reduce((s,i)=>s+Number(i.amount||0),0),openTotal:open.reduce((s,i)=>s+Number(i.amount||0),0)}}
+function financeNotificationCandidates(){const rows=state.financeFinancingInstallments.filter(i=>!['paid','cancelled'].includes(i.status||'pending')).map(i=>{const plan=state.financeFinancingPlans.find(p=>p.id===i.financing_plan_id);return {...i,plan,days:daysUntil(i.due_date),effectiveStatus:financeInstallmentEffectiveStatus(i)}});const overdue=rows.filter(i=>i.effectiveStatus==='overdue');const upcoming=rows.filter(i=>i.days>=0&&i.days<=7);const notes=[];if(overdue.length)notes.push({level:'danger',icon:'⚠️',title:'Gecikmiş finansman taksiti var',detail:`${overdue.length} taksit gecikmiş · ${financeFmt(overdue.reduce((s,i)=>s+Number(i.amount||0),0),'TRY')}`,date:overdue[0]?.due_date,action:'Finans',fn:`page('finance')`});if(upcoming.length)notes.push({level:'warning',icon:'💳',title:'7 gün içinde finansman ödemesi var',detail:`${upcoming.length} taksit yaklaşmış · ${financeFmt(upcoming.reduce((s,i)=>s+Number(i.amount||0),0),'TRY')}`,date:upcoming[0]?.due_date,action:'Takvim',fn:`page('calendar')`});return notes}
 function buildNotifications(){
   const overdue=getOverdue();
   const upcoming=getUpcoming(30);
@@ -37,13 +40,14 @@ function buildNotifications(){
   upcoming.slice(0,8).forEach(e=>notes.push({level:daysUntil(e.date)<=7?'warning':'info',icon:'📅',title:`Yaklaşan: ${e.category||'Kayıt'}`,detail:`${daysUntil(e.date)===0?'Bugün':daysUntil(e.date)+' gün sonra'} · ${entryLabel(e)}`,date:e.date,action:'Takvim',fn:`page('calendar')`}));
   todayOpen.forEach(e=>notes.push({level:'warning',icon:'📌',title:'Bugün yapılacak',detail:entryLabel(e),date:e.date,action:'Aç',fn:`entryForm('${e.home_id?'home':'car'}','${e.home_id||e.car_id}','${e.type}','${e.id}')`}));
   recentDocs.forEach(d=>notes.push({level:'info',icon:'📄',title:'Son eklenen belge',detail:`${d.doc_type||'Belge'} · ${d.file_name||''}`,date:(d.created_at||'').slice(0,10),action:'Belgeler',fn:`page('documents')`}));
+  financeNotificationCandidates().forEach(n=>notes.push(n));
   if(!notes.length)notes.push({level:'success',icon:'✅',title:'Her şey yolunda',detail:'Geciken veya yaklaşan kritik kayıt görünmüyor.',date:today(),action:'Bugün',fn:`page('dashboard')`});
   return notes;
 }
 function updateNotificationBadge(){
   const b=$('navNotifyBadge');
   if(!b)return;
-  const count=getOverdue().length+getUpcoming(7).length;
+  const count=getOverdue().length+getUpcoming(7).length+financeNotificationCandidates().length;
   b.textContent=count;
   b.classList.toggle('hidden',count===0);
 }
@@ -269,7 +273,7 @@ function notifications(){
 }
 function calendar(){
   const selected=calendarMonth||new Date().toISOString().slice(0,7);
-  const list=getCalendarMonthItems(selected);
+  const list=getCalendarMonthItems(selected), financeItems=financeCalendarItems(selected), allList=[...list,...financeItems].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   $('content').innerHTML=`
     <div class="card calendar-head stable-calendar-head">
       <div>
@@ -285,16 +289,17 @@ function calendar(){
       <button class="secondary" onclick="shiftCalendarMonth(1)">▶</button>
       <button class="secondary" onclick="setCalendarMonth(new Date().toISOString().slice(0,7))">Bu Ay</button>
     </div>
-    ${calendarMonthlySummary(list,selected)}
+    ${calendarMonthlySummary(list,selected)}${financeCalendarSummaryCard(financeItems)}
     <div class="calendar-layout calendar-layout-stable">
-      <div class="calendar-month card">${calendarMonthView(list,selected)}</div>
-      <div class="calendar-agenda card"><h2>${calendarMonthLabel(selected)} Finans Kayıtları</h2>${calendarTimeline(list,false)}</div>
+      <div class="calendar-month card">${calendarMonthView(allList,selected)}</div>
+      <div class="calendar-agenda card"><h2>${calendarMonthLabel(selected)} Finans Kayıtları</h2>${calendarTimeline(allList,false)}</div>
     </div>`;
 }
 function setCalendarMonth(value){calendarMonth=value||new Date().toISOString().slice(0,7);calendar()}
 function shiftCalendarMonth(offset){const [y,m]=(calendarMonth||new Date().toISOString().slice(0,7)).split('-').map(Number);const d=new Date(y,m-1+offset,1);setCalendarMonth(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}
 function calendarMonthLabel(key){const [y,m]=key.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('tr-TR',{month:'long',year:'numeric'})}
 function getCalendarMonthItems(key){return state.entries.filter(e=>String(e.date||'').slice(0,7)===key).sort((a,b)=>a.date.localeCompare(b.date));}
+function financeCalendarSummaryCard(items){const s=financeCalendarSummary(items);return `<div class="calendar-summary-grid finance-calendar-summary"><div class="kpi"><span>Finans Takvimi Özeti</span><b>${s.count}</b><small>Bu ayki taksit</small></div><div class="kpi"><span>Açık Taksit</span><b>${s.open}</b><small>${financeFmt(s.openTotal,'TRY')}</small></div><div class="kpi"><span>Geciken</span><b class="neg">${s.overdue}</b></div><div class="kpi"><span>Ödenen</span><b class="pos">${s.paid}</b></div></div>`}
 function calendarMonthlySummary(list,key){
   const income=sum(list,'income'), expense=sum(list,'expense');
   const open=list.filter(e=>!isClosedStatus(e.status)).length;
@@ -322,8 +327,9 @@ function calendarMonthView(list,key=calendarMonth||new Date().toISOString().slic
   }
   return `<div class="cal-weekdays"><span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span><span>Cmt</span><span>Paz</span></div><div class="cal-grid">${html}</div>`;
 }
-function calendarLevel(e){if(new Date(e.date)<new Date(today()))return 'danger';if(e.date===today())return 'warning';return 'info'}
-function calendarTimeline(list,compact=false){if(!list.length)return '<div class="empty">Açık veya yaklaşan kayıt yok.</div>';const groups={};list.forEach(e=>{groups[e.date]??=[];groups[e.date].push(e)});return `<div class="timeline">${Object.keys(groups).sort().map(d=>`<div class="day"><h3>${trDate(d)}</h3>${groups[d].map(e=>entryCard(e,!compact)).join('')}</div>`).join('')}</div>`}
+function calendarLevel(e){if(e.type==='finance-installment')return e.status==='paid'?'ok':(e.status==='overdue'?'danger':'warning');if(new Date(e.date)<new Date(today()))return 'danger';if(e.date===today())return 'warning';return 'info'}
+function calendarTimeline(list,compact=false){if(!list.length)return '<div class="empty">Açık veya yaklaşan kayıt yok.</div>';const groups={};list.forEach(e=>{groups[e.date]??=[];groups[e.date].push(e)});return `<div class="timeline">${Object.keys(groups).sort().map(d=>`<div class="day"><h3>${trDate(d)}</h3>${groups[d].map(e=>e.type==='finance-installment'?financeCalendarCard(e):entryCard(e,!compact)).join('')}</div>`).join('')}</div>`}
+function financeCalendarCard(i){return `<div class="entry-card finance-installment"><div><b>Finansman Taksiti · ${esc(i.provider_name)}</b><small>#${Number(i.installment_no||0)} · ${esc(financeInstallmentStatusLabel(i.status))}</small></div><strong>${financeFmt(i.amount,'TRY')}</strong><button class="small secondary" onclick="financeFinancingInstallmentForm('${i.financing_plan_id}','${i.id}')">Aç</button></div>`}
 function trDate(d){return new Date(d+'T00:00:00').toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric',weekday:'long'})}
 function reports(){
   const homeEntries=state.entries.filter(e=>e.home_id), carEntries=state.entries.filter(e=>e.car_id);

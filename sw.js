@@ -1,4 +1,4 @@
-const CACHE='momentum-hub-v7-sprint-2e-finance-reports';
+const CACHE='momentum-hub-v7-sprint-2f-finance-calendar-notifications';
 const APP_SHELL=['/','/index.html','/style.css','/app.js','/manifest.webmanifest'];
 function shouldCache(req){
   const url=new URL(req.url);

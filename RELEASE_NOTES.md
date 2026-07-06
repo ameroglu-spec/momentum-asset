@@ -1,5 +1,31 @@
 # Momentum Hub Release Notes
 
+## Sprint 2F — Finance Calendar & Notifications Foundation
+
+Bu sprint finansman/kredi taksitlerini takvim ve bildirim merkezine bağlar.
+
+### Ozet
+
+- Finansman taksitleri aylık takvim görünümünde gösterilir.
+- Takvim ajandasında finansman taksit kartları gösterilir.
+- Takvime Finans Takvimi Özeti kartları eklendi.
+- Bildirim merkezine `7 gün içinde finansman ödemesi var` uyarısı eklendi.
+- Bildirim merkezine `Gecikmiş finansman taksiti var` uyarısı eklendi.
+- Sol menü bildirim rozeti finance taksit uyarılarını da sayar.
+- Service worker cache anahtarı 2F'ye güncellendi.
+
+### Supabase SQL
+
+Bu sprint yeni SQL dosyası gerektirmez. Mevcut `finance_financing_installments` tablosu kullanılır.
+
+### Onerilen commit mesaji
+
+```text
+feat: add finance calendar notifications foundation
+```
+
+---
+
 ## Sprint 2E — Finance Reports Foundation
 
 Bu sprint Finance modülüne temel rapor ekranını ve CSV export altyapısını ekler.

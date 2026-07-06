@@ -1,5 +1,30 @@
 # Changelog
 
+## Sprint 2F — Finance Calendar & Notifications Foundation
+
+### Added
+
+- Added `financeCalendarItems` helper for financing installment calendar events.
+- Added `financeCalendarSummary` helper and Finance calendar summary cards.
+- Added financing installment cards into Calendar agenda.
+- Added finance notification candidates for overdue installments and payments due within 7 days.
+
+### Changed
+
+- Calendar month view now includes financing installment events alongside asset income/expense records.
+- Notification Center and notification badge now include finance installment warnings.
+- Updated service worker cache key for Sprint 2F.
+- Expanded Finance verification script for calendar and notification foundation.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2E — Finance Reports Foundation
 
 ### Added

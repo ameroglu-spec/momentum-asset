@@ -247,9 +247,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2E — Finance Reports Foundation
+
+**Durum:** Production test edildi ve kullanici tarafindan onaylandi.
 
 **Hedef:** Finance verileri icin temel rapor ekranini, tarih araligi filtresini ve CSV export altyapisini eklemek.
 
@@ -269,6 +271,31 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 - Bu sprint yeni SQL gerektirmez; mevcut Finance tablolarindan hesaplama yapar.
 - CSV export client-side Blob ile uretilir.
+
+---
+
+## Aktif Sprint
+
+### Sprint 2F — Finance Calendar & Notifications Foundation
+
+**Hedef:** Finansman/kredi taksitlerini takvim ve bildirim merkezine bağlamak.
+
+#### Kapsam
+
+- [x] `financeCalendarItems` helper'ini ekle
+- [x] `financeCalendarSummary` helper'ini ekle
+- [x] Finansman taksitlerini takvim ay görünümüne ekle
+- [x] Takvim ajandasında finansman taksiti kartı göster
+- [x] Finans takvimi özeti kartlarını ekle
+- [x] Yaklaşan 7 gün finansman ödeme uyarısı ekle
+- [x] Gecikmiş finansman taksiti uyarısı ekle
+- [x] Bildirim badge sayısına finance uyarılarını dahil et
+- [x] Service worker cache 2F'ye güncelle
+
+#### Not
+
+- Bu sprint yeni SQL gerektirmez; mevcut `finance_financing_installments` verisini kullanır.
+- Bildirimler client-side hesaplanır; gerçek push notification sonraki altyapı sprintine bırakıldı.
 
 ---
 
@@ -295,8 +322,8 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [x] Financing Installment Schedule UI
 - [x] Finance Dashboard
 - [x] Finance Reports
-- [ ] Finance Calendar integration
-- [ ] Finance Notifications
+- [x] Finance Calendar integration
+- [x] Finance Notifications
 
 ### Quality / Technical Debt
 
