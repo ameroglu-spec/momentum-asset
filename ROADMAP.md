@@ -168,7 +168,7 @@ Finance modulu kullaniciyi veri girmeye zorlayan bir muhasebe programi olmayacak
 
 #### Sprint 2G — Finance Stable Polish & Hardening
 
-**Durum:** Kodlandi, production test/onay bekliyor
+**Durum:** Production test edildi ve onaylandi. Ek mobil polish duzeltmesi uygulandi.
 
 - V7 Finance Stable kabul kontrolu eklendi
 - Service worker cache stratejisi temizlendi

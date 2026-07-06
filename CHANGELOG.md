@@ -15,6 +15,8 @@
 - Hardened service worker cache key to `momentum-hub-v7-finance-stable`.
 - Explicitly excluded Supabase hostnames from service worker cache eligibility.
 - Expanded Finance verification script with V7 stable hardening checks.
+- Aligned Finance page shell width with Asset/Cars page header behavior.
+- Added Finance and Documents mobile polish rules for narrow screens.
 
 ### Verification
 

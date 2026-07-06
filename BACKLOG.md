@@ -301,9 +301,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2G — Finance Stable Polish & Hardening
+
+**Durum:** Production test edildi ve kullanici tarafindan onaylandi. Ek mobil polish duzeltmesi uygulandi.
 
 **Hedef:** Finance fazini V7.0 Stable release'e hazirlamak.
 

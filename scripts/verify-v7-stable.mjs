@@ -28,7 +28,7 @@ const forbiddenSecretPattern = new RegExp(['sb_' + 'secret_', 'SUPABASE_' + 'SER
 const checks = [
   ['V7 title metadata', index.includes('Momentum Hub - V7.0 Finance Stable')],
   ['V7 manifest name', manifest.includes('Momentum Hub V7 Finance')],
-  ['V7 current sprint is 2G', version.includes('Sprint 2G — Finance Stable Polish & Hardening')],
+  ['V7 release candidate status', version.includes('V7.0 Finance Stable Release Candidate')],
   ['V7 stable cache key', sw.includes("const CACHE='momentum-hub-v7-finance-stable'")],
   ['Supabase excluded from service worker cache', sw.includes("url.hostname.includes('supabase.co')")],
   ['App shell cache allowlist exists', sw.includes('APP_SHELL') && sw.includes('/manifest.webmanifest')],
@@ -38,6 +38,9 @@ const checks = [
   ['Finance accounts verifier exists', existsSync('scripts/verify-finance-accounts.mjs')],
   ['No Supabase secret/service-role key pattern in source text', !forbiddenSecretPattern.test(sourceText)],
   ['No legacy V5 backup filename', !app.includes('momentum-asset-v5-yedek.json')],
+  ['Finance shell no desktop max-width cap', read('style.css').includes('.finance-shell{max-width:none')],
+  ['Finance mobile polish marker exists', read('style.css').includes('V7 Sprint 2G mobile polish')],
+  ['Documents mobile polish marker exists', read('style.css').includes('.docs-c3-shell') && read('style.css').includes('overflow-wrap:anywhere')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

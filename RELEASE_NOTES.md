@@ -13,6 +13,8 @@ Bu sprint Finance fazını V7.0 Stable hazırlığına yaklaştıran hardening v
 - Service worker Supabase isteklerini cache dışı bırakacak şekilde sertleştirildi.
 - Public repo güvenlik checklist'i eklendi: `docs/SECURITY_CHECKLIST.md`.
 - V7 stable kalite kapısı eklendi: `scripts/verify-v7-stable.mjs`.
+- Finans bölümündeki `Momentum Finance` üst alanı, Varlıklar/Araçlar sayfasındaki genişlik davranışıyla hizalandı.
+- Finans ve Belgeler bölümü için mobil uyum kuralları eklendi.
 
 ### Supabase SQL
 

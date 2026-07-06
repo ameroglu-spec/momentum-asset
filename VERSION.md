@@ -4,18 +4,18 @@ Stable baseline: **V6.0 Stable**
 
 Active phase: **Faz 2 — Finance**
 
-Current sprint: **Sprint 2G — Finance Stable Polish & Hardening**
+Current sprint: **V7.0 Finance Stable Release Candidate**
 
 Target release: **Momentum Hub V7.0 — Finance Stable**
 
 Latest completed technical milestone:
 
 ```text
-feat: add finance calendar notifications foundation
+feat: harden finance stable release
 ```
 
 Current implementation milestone:
 
 ```text
-feat: harden finance stable release
+release: prepare v7 finance stable candidate
 ```

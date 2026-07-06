@@ -270,7 +270,7 @@ Baslik: `Finansal Durum`
 
 ## Sprint 2G — Finance Stable Polish & Hardening
 
-**Durum:** Kodlandi, production test/onay bekliyor.
+**Durum:** Production test edildi ve onaylandi. Ek mobil polish duzeltmesi uygulandi.
 
 ### Hedef
 
