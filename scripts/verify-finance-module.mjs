@@ -71,7 +71,17 @@ const checks = [
   ['finance financing installments SQL exists', existsSync('sql/finance_financing_installments.sql')],
   ['finance installments UI title exists', app.includes('Taksit Planı')],
   ['finance installment writes are user scoped', app.includes("sb.from('finance_financing_installments').update(row).eq('id',id).eq('user_id',user.id)") && app.includes("sb.from('finance_financing_installments').delete().eq('id',id).eq('user_id',user.id)")],
-  ['service worker cache bumped to 2C.1', sw.includes('momentum-hub-v7-sprint-2c1-financing-installments')],
+  ['finance summary uses installment rows when present', app.includes('installmentSummary=financeInstallmentSummary(plan.id)') && app.includes('hasInstallments')],
+
+  ['finance dashboard detail helper exists', app.includes('function financeDashboardDetail(')],
+  ['finance dashboard cards helper exists', app.includes('function financeDashboardCards(')],
+  ['finance dashboard obligations helper exists', app.includes('function financeUpcomingInstallments(')],
+  ['finance dashboard budget helper exists', app.includes('function financeDashboardBudgetStatus(')],
+  ['finance dashboard UI title exists', app.includes('Finance Dashboard')],
+  ['finance dashboard shows upcoming installments', app.includes('Yaklaşan Taksitler')],
+  ['finance dashboard shows attention card', app.includes('Dikkat Edilecekler')],
+  ['finance page includes dashboard panel', app.includes('finance_dashboard_panel')],
+  ['service worker cache bumped to 2D', sw.includes('momentum-hub-v7-sprint-2d-finance-dashboard')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

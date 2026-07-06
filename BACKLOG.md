@@ -190,9 +190,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2C.1 — Financing Installment Schedule
+
+**Durum:** Production test edildi ve kullanici tarafindan onaylandi.
 
 **Hedef:** Finansman/kredi kayitlari icin ay ay taksit plani, odeme durumu ve gecikme takibi eklemek.
 
@@ -213,6 +215,33 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - Ilk surumde taksitler manuel veya plan kaydindan otomatik olusturulur.
 - Gecikme durumu vade tarihi bugunden eskiyse UI'da otomatik sinyal verir.
 - Dekont/dokuman baglantisi sonraki sprintlere kaldi.
+
+---
+
+## Aktif Sprint
+
+### Sprint 2D — Finance Dashboard
+
+**Hedef:** Finance ana ekraninda nakit, borc, net durum, butce, finansman ve yaklasan taksitleri tek dashboard olarak gostermek.
+
+#### Kapsam
+
+- [x] Finance Dashboard helper fonksiyonlarini ekle
+- [x] Finance ekranina dashboard paneli ekle
+- [x] Bugun dashboard finans kartlarini Finance Dashboard detaylariyla zenginlestir
+- [x] Toplam varlik / toplam borc / net durum kartlarini goster
+- [x] Bu ay gelir / gider / net akis kartlarini goster
+- [x] Butce kullanim ozetini goster
+- [x] Kalan finansman ve odenen finansman ozetini goster
+- [x] Yaklasan finansman/kredi taksitlerini goster
+- [x] Geciken taksit ve butce uyarilarini `Dikkat Edilecekler` alaninda goster
+- [x] Taksit `Bekliyor` -> `Odendi` olunca odenen toplam, kalan odeme ve odenen taksit sayisini taksit kayitlarindan guncelle
+- [x] Service worker cache 2D'ye guncelle
+
+#### Not
+
+- Finansman kartlari artik taksit kayitlari varsa ozetleri taksitlerden hesaplar.
+- Taksit kaydi `Odendi` yapilir ve odenen tutar bos birakilirsa tutar otomatik tam taksit tutarina tamamlanir.
 
 ---
 
@@ -237,7 +266,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [ ] Budget UI
 - [x] Financing / Loan Tracking UI
 - [x] Financing Installment Schedule UI
-- [ ] Finance Dashboard
+- [x] Finance Dashboard
 - [ ] Finance Reports
 - [ ] Finance Calendar integration
 - [ ] Finance Notifications

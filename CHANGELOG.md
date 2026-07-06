@@ -1,5 +1,31 @@
 # Changelog
 
+## Sprint 2D — Finance Dashboard
+
+### Added
+
+- Added Finance Dashboard detail helper and dashboard panel.
+- Added dashboard cards for total assets, total debt, net status, monthly net flow, budget usage, and remaining financing.
+- Added upcoming financing/loan installment list to Finance Dashboard.
+- Added `Dikkat Edilecekler` attention area for overdue installments, budget usage, and negative cash flow signals.
+
+### Changed
+
+- Today dashboard Finance Summary now reuses Finance Dashboard details.
+- Financing summaries now use installment rows when available, so paid total, remaining payment, and paid installment count update after installment status changes.
+- Marking an installment as `Ödendi` with empty paid amount now fills paid amount with the installment amount.
+- Updated service worker cache key for Sprint 2D.
+- Expanded Finance verification script for Finance Dashboard and installment-derived financing totals.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2C.1 — Financing Installment Schedule
 
 ### Added

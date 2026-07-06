@@ -1,5 +1,36 @@
 # Momentum Hub Release Notes
 
+## Sprint 2D — Finance Dashboard
+
+Bu sprint Finance ekranına ana dashboard katmanını ve taksit durumuna bağlı canlı finansman özetlerini ekler.
+
+### Ozet
+
+- Finance ekranına `Finance Dashboard` paneli eklendi.
+- Dashboard toplam varlık, toplam borç, net durum, bu ay net akış, bütçe kullanımı ve kalan finansman kartlarını gösterir.
+- Yaklaşan finansman/kredi taksitleri ayrı listelenir.
+- `Dikkat Edilecekler` alanı geciken taksit, yüksek/aşılmış bütçe ve negatif net akış sinyallerini gösterir.
+- Finansman/kredi kartları artık taksit kaydı varsa ödenen toplam, kalan ödeme ve ödenen taksit sayısını taksit planından hesaplar.
+- Bir taksit `Bekliyor` durumundan `Ödendi` durumuna alınırsa ödenen tutar boşsa otomatik taksit tutarıyla doldurulur.
+- Service worker cache anahtarı 2D'ye güncellendi.
+
+### Supabase SQL
+
+Bu sprint yeni SQL dosyası gerektirmez. Önceki sprintlerden şu dosyaların production'da çalışmış olması gerekir:
+
+```text
+sql/finance_financing_plans.sql
+sql/finance_financing_installments.sql
+```
+
+### Onerilen commit mesaji
+
+```text
+feat: add finance dashboard
+```
+
+---
+
 ## Sprint 2C.1 — Financing Installment Schedule
 
 Bu sprint finansman/kredi kayıtlarına ay ay taksit planı ve ödeme durumu takibi ekler.
