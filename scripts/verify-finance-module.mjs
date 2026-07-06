@@ -102,7 +102,14 @@ const checks = [
   ['finance calendar shows finance summary card', app.includes('finance-calendar-summary') && app.includes('Finans Takvimi Özeti')],
   ['finance notification text for 7 days exists', app.includes('7 gün içinde finansman ödemesi var')],
   ['finance overdue notification text exists', app.includes('Gecikmiş finansman taksiti var')],
-  ['service worker cache bumped to 2F', sw.includes('momentum-hub-v7-sprint-2f-finance-calendar-notifications')],
+
+  ['V7 title metadata exists', index.includes('Momentum Hub - V7.0 Finance Stable')],
+  ['V7 manifest metadata exists', readFileSync('manifest.webmanifest','utf8').includes('Momentum Hub V7 Finance')],
+  ['backup filename uses V7', app.includes('momentum-hub-v7-yedek.json')],
+  ['service worker cache bumped to V7 stable', sw.includes('momentum-hub-v7-finance-stable')],
+  ['service worker avoids Supabase caching', sw.includes('url.hostname.includes(\'supabase.co\')')],
+  ['public security checklist exists', existsSync('docs/SECURITY_CHECKLIST.md')],
+  ['V7 stable quality gate exists', existsSync('scripts/verify-v7-stable.mjs')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

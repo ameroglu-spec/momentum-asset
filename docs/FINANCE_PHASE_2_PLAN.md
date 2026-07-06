@@ -270,19 +270,19 @@ Baslik: `Finansal Durum`
 
 ## Sprint 2G — Finance Stable Polish & Hardening
 
-**Durum:** Siradaki sprint.
+**Durum:** Kodlandi, production test/onay bekliyor.
 
 ### Hedef
 
 Finance fazini V7.0 Stable release'e hazirlamak.
 
-### Kapsam
+### Tamamlananlar
 
 - V7 Finance Stable kabul kontrolu
 - Service worker cache stratejisi temizligi
 - V6/V7 version metadata uyumsuzluklarini temizleme
 - Public repo security checklist
-- Mobil ve masaustu son UX kontrolu
+- Mobil ve masaustu son UX kontrol checklist'i
 - Basit test/quality gate iyilestirmesi
 - Release notes ve handoff paketinin finalize edilmesi
 

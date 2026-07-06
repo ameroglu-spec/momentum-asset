@@ -1,5 +1,31 @@
 # Momentum Hub Release Notes
 
+## Sprint 2G — Finance Stable Polish & Hardening
+
+Bu sprint Finance fazını V7.0 Stable hazırlığına yaklaştıran hardening ve kalite kapısı işlerini ekler.
+
+### Ozet
+
+- Browser title `Momentum Hub - V7.0 Finance Stable` olarak güncellendi.
+- PWA manifest adı `Momentum Hub V7 Finance` olarak güncellendi.
+- Yedek dosya adı `momentum-hub-v7-yedek.json` olarak güncellendi.
+- Service worker cache anahtarı `momentum-hub-v7-finance-stable` olarak sabitlendi.
+- Service worker Supabase isteklerini cache dışı bırakacak şekilde sertleştirildi.
+- Public repo güvenlik checklist'i eklendi: `docs/SECURITY_CHECKLIST.md`.
+- V7 stable kalite kapısı eklendi: `scripts/verify-v7-stable.mjs`.
+
+### Supabase SQL
+
+Bu sprint yeni SQL dosyası gerektirmez.
+
+### Onerilen commit mesaji
+
+```text
+feat: harden finance stable release
+```
+
+---
+
 ## Sprint 2F — Finance Calendar & Notifications Foundation
 
 Bu sprint finansman/kredi taksitlerini takvim ve bildirim merkezine bağlar.

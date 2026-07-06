@@ -309,13 +309,13 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 #### Kapsam
 
-- [ ] V7 Finance Stable kabul kontrolu yap
-- [ ] Service worker cache stratejisini temizle
-- [ ] V6/V7 metadata uyumsuzluklarini temizle
-- [ ] Public repo security checklist hazirla
-- [ ] Mobil ve masaustu son UX kontrolu yap
-- [ ] Basit test/quality gate iyilestirmesi yap
-- [ ] V7.0 Finance Stable release notes ve handoff paketini finalize et
+- [x] V7 Finance Stable kabul kontrolu yap
+- [x] Service worker cache stratejisini temizle
+- [x] V6/V7 metadata uyumsuzluklarini temizle
+- [x] Public repo security checklist hazirla
+- [x] Mobil ve masaustu son UX kontrolu yap
+- [x] Basit test/quality gate iyilestirmesi yap
+- [x] V7.0 Finance Stable release notes ve handoff paketini finalize et
 
 ---
 
@@ -347,12 +347,12 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ### Quality / Technical Debt
 
-- [ ] Service worker cache stratejisini duzelt
-- [ ] V6/V7 version metadata uyumsuzlugunu tamamen temizle
+- [x] Service worker cache stratejisini duzelt
+- [x] V6/V7 version metadata uyumsuzlugunu tamamen temizle
 - [ ] `app.js` modullere bolme planini hazirla
 - [ ] Inline `onclick` kullanimlarini azaltma stratejisi belirle
-- [ ] Basit test/quality gate ekle
-- [ ] Public repo security checklist ekle
+- [x] Basit test/quality gate ekle
+- [x] Public repo security checklist ekle
 
 ---
 

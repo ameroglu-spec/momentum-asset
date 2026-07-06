@@ -1,5 +1,32 @@
 # Changelog
 
+## Sprint 2G — Finance Stable Polish & Hardening
+
+### Added
+
+- Added `docs/SECURITY_CHECKLIST.md` for public repo and V7 Finance Stable handoff checks.
+- Added `scripts/verify-v7-stable.mjs` quality gate.
+
+### Changed
+
+- Updated browser title metadata to `Momentum Hub - V7.0 Finance Stable`.
+- Updated PWA manifest name to `Momentum Hub V7 Finance`.
+- Updated backup export filename to `momentum-hub-v7-yedek.json`.
+- Hardened service worker cache key to `momentum-hub-v7-finance-stable`.
+- Explicitly excluded Supabase hostnames from service worker cache eligibility.
+- Expanded Finance verification script with V7 stable hardening checks.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node scripts/verify-v7-stable.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+- `node --check scripts/verify-v7-stable.mjs`
+
+---
+
 ## Sprint 2F — Finance Calendar & Notifications Foundation
 
 ### Added

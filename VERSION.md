@@ -17,5 +17,5 @@ feat: add finance calendar notifications foundation
 Current implementation milestone:
 
 ```text
-planning: prepare finance stable polish hardening
+feat: harden finance stable release
 ```

@@ -168,15 +168,15 @@ Finance modulu kullaniciyi veri girmeye zorlayan bir muhasebe programi olmayacak
 
 #### Sprint 2G — Finance Stable Polish & Hardening
 
-**Durum:** Siradaki sprint
+**Durum:** Kodlandi, production test/onay bekliyor
 
-- V7 Finance Stable kabul kontrolu
-- Service worker cache stratejisi temizligi
-- V6/V7 metadata uyumsuzluklarini temizleme
-- Public repo security checklist
-- Mobil UX son kontrol
-- Basit test/quality gate iyilestirmesi
-- V7.0 Finance Stable release hazirligi
+- V7 Finance Stable kabul kontrolu eklendi
+- Service worker cache stratejisi temizlendi
+- V6/V7 metadata uyumsuzluklari temizlendi
+- Public repo security checklist eklendi
+- Mobil UX son kontrol icin checklist hazirlandi
+- Basit test/quality gate iyilestirmesi eklendi
+- V7.0 Finance Stable release hazirligi yapildi
 
 ### Faz 2 stable kabul kriterleri
 

@@ -1,7 +1,8 @@
-const CACHE='momentum-hub-v7-sprint-2f-finance-calendar-notifications';
+const CACHE='momentum-hub-v7-finance-stable';
 const APP_SHELL=['/','/index.html','/style.css','/app.js','/manifest.webmanifest'];
 function shouldCache(req){
   const url=new URL(req.url);
+  if(url.hostname.includes('supabase.co'))return false;
   if(url.origin!==location.origin)return false;
   if(req.method!=='GET')return false;
   return APP_SHELL.includes(url.pathname);
