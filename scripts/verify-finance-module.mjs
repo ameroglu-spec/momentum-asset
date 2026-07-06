@@ -81,7 +81,18 @@ const checks = [
   ['finance dashboard shows upcoming installments', app.includes('Yaklaşan Taksitler')],
   ['finance dashboard shows attention card', app.includes('Dikkat Edilecekler')],
   ['finance page includes dashboard panel', app.includes('finance_dashboard_panel')],
-  ['service worker cache bumped to 2D', sw.includes('momentum-hub-v7-sprint-2d-finance-dashboard')],
+
+  ['finance reports helper exists', app.includes('function financeReportsData(')],
+  ['finance reports UI helper exists', app.includes('function financeReportsPanel(')],
+  ['finance reports export exists', app.includes('function exportFinanceReportCsv(')],
+  ['finance reports date range helper exists', app.includes('function financeReportRange(')],
+  ['finance reports CSV escape helper exists', app.includes('function csvCell(')],
+  ['finance reports show monthly income expense', app.includes('Aylık Gelir/Gider Raporu')],
+  ['finance reports show category expense report', app.includes('Kategori Bazlı Gider')],
+  ['finance reports show financing payment report', app.includes('Finansman/Kredi Ödeme Raporu')],
+  ['finance reports show budget actual report', app.includes('Bütçe / Gerçekleşen')],
+  ['finance page includes reports panel', app.includes('finance_reports_panel')],
+  ['service worker cache bumped to 2E', sw.includes('momentum-hub-v7-sprint-2e-finance-reports')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

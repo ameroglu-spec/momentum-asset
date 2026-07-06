@@ -1,5 +1,29 @@
 # Changelog
 
+## Sprint 2E — Finance Reports Foundation
+
+### Added
+
+- Added `financeReportsData` helper for monthly income/expense, category expense, financing payment, and budget actual reports.
+- Added date range filtering for Finance reports.
+- Added `Finans Raporları` panel to Finance screen.
+- Added CSV export actions for monthly, category, financing, and budget report sections.
+
+### Changed
+
+- Updated Finance navigation tabs with Reports shortcut.
+- Updated service worker cache key for Sprint 2E.
+- Expanded Finance verification script for reports foundation.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2D — Finance Dashboard
 
 ### Added

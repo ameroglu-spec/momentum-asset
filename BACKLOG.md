@@ -218,9 +218,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2D — Finance Dashboard
+
+**Durum:** Production test edildi ve kullanici tarafindan onaylandi.
 
 **Hedef:** Finance ana ekraninda nakit, borc, net durum, butce, finansman ve yaklasan taksitleri tek dashboard olarak gostermek.
 
@@ -242,6 +244,31 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 - Finansman kartlari artik taksit kayitlari varsa ozetleri taksitlerden hesaplar.
 - Taksit kaydi `Odendi` yapilir ve odenen tutar bos birakilirsa tutar otomatik tam taksit tutarina tamamlanir.
+
+---
+
+## Aktif Sprint
+
+### Sprint 2E — Finance Reports Foundation
+
+**Hedef:** Finance verileri icin temel rapor ekranini, tarih araligi filtresini ve CSV export altyapisini eklemek.
+
+#### Kapsam
+
+- [x] `financeReportsData` rapor helper'ini ekle
+- [x] Tarih araligi helper'i ekle
+- [x] Finance ekranina `Finans Raporları` paneli ekle
+- [x] Aylik gelir/gider raporu ekle
+- [x] Kategori bazli gider raporu ekle
+- [x] Finansman/kredi odeme raporu ekle
+- [x] Butce / gerceklesen raporu ekle
+- [x] Raporlara CSV export aksiyonu ekle
+- [x] Service worker cache 2E'ye guncelle
+
+#### Not
+
+- Bu sprint yeni SQL gerektirmez; mevcut Finance tablolarindan hesaplama yapar.
+- CSV export client-side Blob ile uretilir.
 
 ---
 
@@ -267,7 +294,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [x] Financing / Loan Tracking UI
 - [x] Financing Installment Schedule UI
 - [x] Finance Dashboard
-- [ ] Finance Reports
+- [x] Finance Reports
 - [ ] Finance Calendar integration
 - [ ] Finance Notifications
 

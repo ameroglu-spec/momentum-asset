@@ -1,5 +1,32 @@
 # Momentum Hub Release Notes
 
+## Sprint 2E — Finance Reports Foundation
+
+Bu sprint Finance modülüne temel rapor ekranını ve CSV export altyapısını ekler.
+
+### Ozet
+
+- Finance ekranına `Finans Raporları` paneli eklendi.
+- Tarih aralığı filtresi eklendi.
+- Aylık gelir/gider raporu eklendi.
+- Kategori bazlı gider raporu eklendi.
+- Finansman/kredi ödeme raporu eklendi.
+- Bütçe / gerçekleşen karşılaştırma raporu eklendi.
+- Her rapor bölümü için CSV export aksiyonu eklendi.
+- Service worker cache anahtarı 2E'ye güncellendi.
+
+### Supabase SQL
+
+Bu sprint yeni SQL dosyası gerektirmez. Mevcut Finance tabloları kullanılır.
+
+### Onerilen commit mesaji
+
+```text
+feat: add finance reports foundation
+```
+
+---
+
 ## Sprint 2D — Finance Dashboard
 
 Bu sprint Finance ekranına ana dashboard katmanını ve taksit durumuna bağlı canlı finansman özetlerini ekler.
