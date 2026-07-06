@@ -1,5 +1,30 @@
 # Changelog
 
+## Sprint 2C.0 — Financing / Loan Tracking Foundation
+
+### Added
+
+- Added `finance_financing_plans` loading into app state.
+- Added financing/loan summary helpers for paid amount, remaining amount, remaining months, total cost, and progress percent.
+- Added `Finansmanlar / Krediler` section to Finance screen.
+- Added financing/loan create/edit/delete UI.
+- Added Finance KPI cards for active financing count, paid total, remaining total, and commission total.
+- Added `sql/finance_financing_plans.sql` with RLS own-user policies.
+
+### Changed
+
+- Updated service worker cache key for Sprint 2C.0.
+- Expanded Finance verification script for financing/loan tracking.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2B.0 — Budget Foundation
 
 ### Added

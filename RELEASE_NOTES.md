@@ -1,5 +1,35 @@
 # Momentum Hub Release Notes
 
+## Sprint 2C.0 — Financing / Loan Tracking Foundation
+
+Bu sprint Finance modülüne banka kredisi ve katılım finansmanı ödeme takibini ekler.
+
+### Ozet
+
+- `finance_financing_plans` tablosu için SQL dosyası eklendi.
+- Finance ekranına `Finansmanlar / Krediler` bölümü eklendi.
+- Kullanıcı banka kredisi, Katılımevim/Fuzulevim/Birevim benzeri katılım finansmanı veya diğer finansman kayıtlarını ekleyebilir, düzenleyebilir ve silebilir.
+- Kartlar alınan finansman, komisyon, aylık ödeme, ödenen ay, kalan ay, ödenen toplam, kalan ödeme, komisyon dahil toplam maliyet ve ilerleme yüzdesi gösterir.
+- Finance üst KPI alanına aktif finansman, ödenen finansman, kalan finansman ve komisyon toplamları eklendi.
+- İlk sürümde taksitler ay ay ayrı tabloya açılmaz; toplam vade ve ödenen ay üzerinden hesaplanır.
+- Service worker cache anahtarı 2C.0'a güncellendi.
+
+### Supabase SQL
+
+Supabase SQL Editor'da çalıştırılacak dosya:
+
+```text
+sql/finance_financing_plans.sql
+```
+
+### Onerilen commit mesaji
+
+```text
+feat: add financing loan tracking foundation
+```
+
+---
+
 ## Sprint 2B.0 — Budget Foundation
 
 Bu sprint Finance modülüne aylık kategori bütçesi temelini ekler.

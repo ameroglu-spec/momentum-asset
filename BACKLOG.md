@@ -155,6 +155,39 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
+## Aktif Sprint
+
+### Sprint 2C.0 — Financing / Loan Tracking Foundation
+
+**Hedef:** Banka kredisi ve Katilimevim/Fuzulevim/Birevim benzeri katilim finansmani odemelerini Finance icinde takip etmek.
+
+#### Kapsam
+
+- [x] `finance_financing_plans` SQL dosyasini ekle
+- [x] `state.financeFinancingPlans` alanini ekle
+- [x] Finansman/kredi verisini user scoped yukle
+- [x] Finansman hesaplama helper'larini ekle
+- [x] Finance ekranina `Finansmanlar / Krediler` bolumunu ekle
+- [x] Finansman/kredi ekleme / duzenleme / silme UI'i ekle
+- [x] Kartlarda toplam tutar / komisyon / aylik odeme / odenen / kalan / ilerleme bilgisini goster
+- [x] Service worker cache 2C.0'a guncelle
+
+#### Ornek kabul senaryosu
+
+- Katilimevim'den 1.000.000 TL finansman alindi
+- 75.000 TL komisyon/organizasyon ucreti odendi
+- Toplam vade 30 ay
+- Aylik odeme 33.333,33 TL
+- 10 ay odendi, 20 ay kaldi
+- Sistem odenen tutari 333.333,33 TL, kalan tutari 666.666,67 TL, komisyon dahil toplam maliyeti 1.075.000 TL gostermeli
+
+#### Not
+
+- Ilk surumde taksitler ay ay tabloya acilmayacak; toplam vade ve odenen ay sayisindan hesaplanacak.
+- Detayli taksit plani Sprint 2C.1'e kalacak.
+
+---
+
 ## Finance Faz Backlog
 
 ### Database / Architecture
@@ -162,6 +195,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [ ] `finance_categories` icin `unique(user_id, type, name)` constraint ekle
 - [ ] `finance_seed.sql` dosyasini tekrar calistirilabilir hale getir
 - [ ] Budget tablolari tasarla: `finance_budgets`, `finance_budget_items`
+- [x] Finansman/kredi takip tablosu tasarla: `finance_financing_plans`
 - [ ] Installment tablosu tasarla: `finance_financing_installments`
 - [ ] Recurring transaction yapisi tasarla
 - [ ] Foreign key tenant butunlugunu guclendir
@@ -173,6 +207,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [x] Finance Transactions UI
 - [x] Transfers UI
 - [ ] Budget UI
+- [x] Financing / Loan Tracking UI
 - [ ] Finance Dashboard
 - [ ] Finance Reports
 - [ ] Finance Calendar integration

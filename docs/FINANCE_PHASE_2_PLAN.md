@@ -151,7 +151,68 @@ Onerilen tablolar:
 
 ---
 
-## Sprint 2C — Finance Dashboard
+## Sprint 2C.0 — Financing / Loan Tracking Foundation
+
+### Amac
+
+Kullanici banka kredisi veya Katilimevim/Fuzulevim/Birevim gibi katilim finansmani odemelerini Finance icinde takip edebilsin.
+
+### Eklenecekler
+
+- Finansman/kredi kaydi
+- Kurum adi
+- Finansman tipi: banka kredisi / katilim finansmani / diger
+- Alinan finansman tutari
+- Komisyon / organizasyon ucreti
+- Toplam vade
+- Aylik odeme
+- Odenen ay
+- Kalan ay
+- Odenen toplam
+- Kalan toplam
+- Komisyon dahil toplam maliyet
+- Ilerleme yuzdesi
+
+### Kullanilacak tablo
+
+`finance_financing_plans`
+
+### Kabul ornegi
+
+Katilimevim'den 1.000.000 TL finansman, 75.000 TL komisyon, 30 ay vade, 33.333,33 TL aylik odeme ve 10 odenen ay icin sistem sunlari gostermeli:
+
+- Odenen: 333.333,33 TL
+- Kalan: 666.666,67 TL
+- Kalan ay: 20
+- Komisyon dahil toplam maliyet: 1.075.000 TL
+- Ilerleme: %33,3
+
+### Kapsam disi
+
+- Ay ay taksit tablosu
+- Dekont/dokuman baglantisi
+- Calendar notification entegrasyonu
+
+---
+
+## Sprint 2C.1 — Financing Installment Schedule
+
+### Kapsam
+
+- Ay ay taksit plani
+- Odendi / gecikti / bekliyor durumu
+- Kismi odeme hazirligi
+- Dekont/dokuman baglantisi hazirligi
+
+### Gerekli database patch
+
+Onerilen tablo:
+
+- `finance_financing_installments`
+
+---
+
+## Sprint 2D — Finance Dashboard
 
 ### Ana ekran adi
 
@@ -168,11 +229,12 @@ Baslik: `Finansal Durum`
 - Bu ay gider
 - Tasarruf
 - Yaklasan odemeler
+- Yaklasan kredi/finansman odemeleri
 - Geciken finans kayitlari
 
 ---
 
-## Sprint 2D — Investments
+## Sprint 2E — Investments
 
 ### Kapsam
 

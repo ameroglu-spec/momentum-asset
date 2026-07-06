@@ -96,7 +96,21 @@ Finance modulu kullaniciyi veri girmeye zorlayan bir muhasebe programi olmayacak
 - Gerceklesen / kalan
 - Limit asimi sinyalleri
 
-#### Sprint 2C — Finance Dashboard
+#### Sprint 2C.0 — Financing / Loan Tracking Foundation
+
+- Banka kredisi ve katilim finansmani kaydi
+- Katilimevim / Fuzulevim / Birevim benzeri finansmanlar
+- Komisyon / organizasyon ucreti takibi
+- Toplam vade, aylik odeme, odenen ay, kalan ay hesaplari
+- Odenen toplam, kalan toplam ve ilerleme yuzdesi
+
+#### Sprint 2C.1 — Financing Installment Schedule
+
+- Ay ay taksit plani
+- Odendi / gecikti / bekliyor durumlari
+- Dekont/dokuman baglantisi hazirligi
+
+#### Sprint 2D — Finance Dashboard
 
 - Finansal Durum ana ekrani
 - Toplam nakit
@@ -105,20 +119,13 @@ Finance modulu kullaniciyi veri girmeye zorlayan bir muhasebe programi olmayacak
 - Net servet
 - Bu ay gelir / gider / tasarruf
 - Yaklasan finansal yukumlulukler
+- Yaklasan kredi/finansman odemeleri
 
-#### Sprint 2D — Investments
+#### Sprint 2E — Investments
 
 - Altin, doviz, fon, hisse, BES, kripto hazirligi
 - Portfoy dagilimi
 - Maliyet / guncel deger alanlari
-
-#### Sprint 2E — Loans & Financings
-
-- Konut, arac, ihtiyac kredisi
-- Katilim Evim / Fuzul Ev / Eminevim benzeri finansmanlar
-- Taksit plani
-- Kalan borc
-- Odeme takibi
 
 #### Sprint 2F — Finance Reports
 

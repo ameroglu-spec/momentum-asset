@@ -48,7 +48,18 @@ const checks = [
   ['financeBudgetActual exists', app.includes('function financeBudgetActual(')],
   ['financeBudgetProgress exists', app.includes('function financeBudgetProgress(')],
   ['finance budgets SQL exists', existsSync('sql/finance_budgets.sql')],
-  ['service worker cache bumped to 2B.0', sw.includes('momentum-hub-v7-sprint-2b0-budget-foundation')],
+
+  ['finance financing plans state exists', app.includes('financeFinancingPlans:[]')],
+  ['load() selects finance_financing_plans', app.includes("sb.from('finance_financing_plans').select('*').eq('user_id',user.id)")],
+  ['financeFinancingSummary exists', app.includes('function financeFinancingSummary(')],
+  ['financeFinancingPlansList exists', app.includes('function financeFinancingPlansList(')],
+  ['financeFinancingPlanForm exists', app.includes('function financeFinancingPlanForm(')],
+  ['saveFinanceFinancingPlan exists', app.includes('async function saveFinanceFinancingPlan(')],
+  ['deleteFinanceFinancingPlan exists', app.includes('async function deleteFinanceFinancingPlan(')],
+  ['finance financing SQL exists', existsSync('sql/finance_financing_plans.sql')],
+  ['finance financing UI title exists', app.includes('Finansmanlar / Krediler')],
+  ['finance financing writes are user scoped', app.includes("sb.from('finance_financing_plans').update(row).eq('id',id).eq('user_id',user.id)") && app.includes("sb.from('finance_financing_plans').delete().eq('id',id).eq('user_id',user.id)")],
+  ['service worker cache bumped to 2C.0', sw.includes('momentum-hub-v7-sprint-2c0-financing-loan-tracking')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);
