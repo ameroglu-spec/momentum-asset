@@ -1,5 +1,22 @@
 # Changelog
 
+## V7.0 Finance Stable
+
+### Changed
+
+- Marked V7.0 Finance Stable as production approved.
+- Updated stable baseline from V6.0 Stable to V7.0 Finance Stable.
+- Updated service worker cache key to `momentum-hub-v7-finance-stable-final`.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node scripts/verify-v7-stable.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+- `node --check scripts/verify-v7-stable.mjs`
+
 ## V7.0 Finance Stable Release Candidate
 
 ### Added

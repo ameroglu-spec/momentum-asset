@@ -1,6 +1,8 @@
 # Momentum Hub V7.0 Finance Stable Release Candidate
 
-Status: Release Candidate ready for production validation.
+Status: Release Candidate approved for V7.0 Finance Stable.
+
+Final status: Production approved.
 
 ## Scope
 

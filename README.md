@@ -6,10 +6,10 @@ Momentum Hub; ev, arac, gelir/gider, belge, takvim, bildirim, rapor ve finansal 
 
 ## Current Product Status
 
-- Stable baseline: **V6.0 Stable**
+- Stable baseline: **V7.0 Finance Stable**
 - Active phase: **Faz 2 — Finance**
-- Current sprint: **V7.0 Finance Stable Release Candidate**
-- Target: **Momentum Hub V7.0 — Finance Stable**
+- Current release: **V7.0 Finance Stable**
+- Status: **Production approved**
 
 ## Core Modules
 
