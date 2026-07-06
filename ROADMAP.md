@@ -178,6 +178,15 @@ Finance modulu kullaniciyi veri girmeye zorlayan bir muhasebe programi olmayacak
 - Basit test/quality gate iyilestirmesi eklendi
 - V7.0 Finance Stable release hazirligi yapildi
 
+#### V7.0 Finance Stable Release Candidate
+
+**Durum:** Kodlari olusturuldu, production validation bekliyor.
+
+- Release Candidate checklist dosyasi eklendi
+- Service worker cache anahtari `momentum-hub-v7-finance-stable-rc1` olarak guncellendi
+- Sprint 2G onayli mobil polish duzeltmeleri RC paketine dahil edildi
+- Yeni Supabase SQL gerektirmedigi not edildi
+
 ### Faz 2 stable kabul kriterleri
 
 - Finans ekranlari mobil ve masaustu calisir.

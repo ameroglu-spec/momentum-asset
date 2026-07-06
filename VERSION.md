@@ -17,5 +17,5 @@ feat: harden finance stable release
 Current implementation milestone:
 
 ```text
-release: prepare v7 finance stable candidate
+release: build v7 finance stable candidate
 ```

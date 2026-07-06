@@ -288,6 +288,20 @@ Finance fazini V7.0 Stable release'e hazirlamak.
 
 ---
 
+## V7.0 Finance Stable Release Candidate
+
+**Durum:** Kodlari olusturuldu, production validation bekliyor.
+
+### Kapsam
+
+- Sprint 2G onayi RC durumuna islendi.
+- `docs/V7_FINANCE_STABLE_RC.md` checklist dosyasi eklendi.
+- Service worker cache anahtari `momentum-hub-v7-finance-stable-rc1` olarak guncellendi.
+- Finance/Documents mobil polish duzeltmeleri RC paketine dahil edildi.
+- Yeni Supabase SQL gerekmedigi not edildi.
+
+---
+
 ## Faz 2 riskleri
 
 1. Kapsam fazla buyuyebilir; sprintleri kucuk tutmak sart.

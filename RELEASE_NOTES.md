@@ -1,5 +1,23 @@
 # Momentum Hub Release Notes
 
+## V7.0 Finance Stable Release Candidate
+
+Bu paket, Sprint 2G onayı ve mobil polish düzeltmesi sonrası V7.0 Finance Stable için Release Candidate kodlarını içerir.
+
+### Özet
+
+- Release Candidate checklist dosyası eklendi: `docs/V7_FINANCE_STABLE_RC.md`.
+- Service worker cache anahtarı `momentum-hub-v7-finance-stable-rc1` olarak güncellendi.
+- Finance ve Documents mobil polish düzeltmeleri RC paketine dahil edildi.
+- Yeni Supabase SQL gerektirmez.
+
+### Kontrol
+
+- Finance Module verification
+- Finance Accounts verification
+- V7 Stable verification
+- JS syntax checks
+
 ## Sprint 2G — Finance Stable Polish & Hardening
 
 Bu sprint Finance fazını V7.0 Stable hazırlığına yaklaştıran hardening ve kalite kapısı işlerini ekler.

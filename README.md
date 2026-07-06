@@ -55,6 +55,7 @@ Baslica alanlar:
 - [docs/FINANCE_PHASE_2_PLAN.md](docs/FINANCE_PHASE_2_PLAN.md) — Finance faz plani
 - [docs/README_DATABASE.md](docs/README_DATABASE.md) — Finance database architecture
 - [docs/README_FINANCE.md](docs/README_FINANCE.md) — Finance module notes
+- [docs/V7_FINANCE_STABLE_RC.md](docs/V7_FINANCE_STABLE_RC.md) — V7.0 Finance Stable Release Candidate checklist
 
 ## Database Files
 

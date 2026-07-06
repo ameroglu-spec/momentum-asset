@@ -321,6 +321,23 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
+## Aktif Release Candidate
+
+### V7.0 Finance Stable Release Candidate
+
+**Durum:** Kodlari olusturuldu, production validation bekliyor.
+
+#### Kapsam
+
+- [x] Sprint 2G onayi RC durumuna islendi
+- [x] RC checklist dosyasi olusturuldu
+- [x] Service worker cache anahtari RC icin yenilendi
+- [x] Finance/Documents mobil polish duzeltmeleri RC paketine dahil edildi
+- [x] Stable dogrulama komutlari calistirildi
+- [ ] Production validation sonucu onaylanacak
+
+---
+
 ## Finance Faz Backlog
 
 ### Database / Architecture

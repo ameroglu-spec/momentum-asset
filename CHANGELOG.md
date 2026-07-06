@@ -1,5 +1,25 @@
 # Changelog
 
+## V7.0 Finance Stable Release Candidate
+
+### Added
+
+- Added `docs/V7_FINANCE_STABLE_RC.md` with production validation checklist.
+
+### Changed
+
+- Updated service worker cache key to `momentum-hub-v7-finance-stable-rc1` so RC deployments pick up the latest assets.
+- Advanced current implementation milestone to `release: build v7 finance stable candidate`.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node scripts/verify-v7-stable.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+- `node --check scripts/verify-v7-stable.mjs`
+
 ## Sprint 2G — Finance Stable Polish & Hardening
 
 ### Added
