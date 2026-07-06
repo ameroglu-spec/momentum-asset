@@ -274,9 +274,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2F — Finance Calendar & Notifications Foundation
+
+**Durum:** Production test edildi ve kullanici tarafindan onaylandi.
 
 **Hedef:** Finansman/kredi taksitlerini takvim ve bildirim merkezine bağlamak.
 
@@ -296,6 +298,24 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 - Bu sprint yeni SQL gerektirmez; mevcut `finance_financing_installments` verisini kullanır.
 - Bildirimler client-side hesaplanır; gerçek push notification sonraki altyapı sprintine bırakıldı.
+
+---
+
+## Aktif Sprint
+
+### Sprint 2G — Finance Stable Polish & Hardening
+
+**Hedef:** Finance fazini V7.0 Stable release'e hazirlamak.
+
+#### Kapsam
+
+- [ ] V7 Finance Stable kabul kontrolu yap
+- [ ] Service worker cache stratejisini temizle
+- [ ] V6/V7 metadata uyumsuzluklarini temizle
+- [ ] Public repo security checklist hazirla
+- [ ] Mobil ve masaustu son UX kontrolu yap
+- [ ] Basit test/quality gate iyilestirmesi yap
+- [ ] V7.0 Finance Stable release notes ve handoff paketini finalize et
 
 ---
 

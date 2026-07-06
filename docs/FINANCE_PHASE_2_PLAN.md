@@ -214,83 +214,77 @@ Onerilen tablo:
 
 ## Sprint 2D — Finance Dashboard
 
+**Durum:** Production test edildi ve onaylandi.
+
 ### Ana ekran adi
 
 Menü: `Finans`  
 Baslik: `Finansal Durum`
 
-### Gosterilecekler
+### Tamamlananlar
 
-- Net servet
-- Nakit
-- Varliklar
-- Borclar
-- Bu ay gelir
-- Bu ay gider
-- Tasarruf
-- Yaklasan odemeler
-- Yaklasan kredi/finansman odemeleri
-- Geciken finans kayitlari
+- Finance Dashboard paneli
+- Net durum / toplam varlik / toplam borc kartlari
+- Bu ay net akis karti
+- Butce kullanimi karti
+- Kalan finansman karti
+- Yaklasan taksitler
+- Dikkat edilecekler alani
 
 ---
 
-## Sprint 2E — Investments
+## Sprint 2E — Finance Reports Foundation
 
-### Kapsam
+**Durum:** Production test edildi ve onaylandi.
 
-- Altin
-- Doviz
-- Hisse senedi
-- Fon
-- BES
-- Kripto hazirligi
+### Tamamlananlar
 
-### Not
-
-Ilk surumde otomatik piyasa verisi zorunlu degil. Manuel guncel deger yeterli kabul edilebilir.
+- Aylik gelir/gider raporu
+- Kategori bazli gider raporu
+- Finansman/kredi odeme raporu
+- Butce / gerceklesen raporu
+- Tarih araligi filtresi
+- CSV export altyapisi
 
 ---
 
-## Sprint 2E — Loans & Financings
+## Sprint 2F — Finance Calendar & Notifications Foundation
 
-### Kapsam
+**Durum:** Production test edildi ve onaylandi.
 
-- Konut kredisi
-- Arac kredisi
-- Ihtiyac kredisi
-- Katilim Evim / Fuzul Ev / Eminevim
-- Taksit plani
-- Kalan borc
-- Odeme takipleri
+### Tamamlananlar
 
-### Gerekli database patch
+- Finansman taksitleri takvim ay gorunumune baglandi
+- Takvim ajandasinda finansman taksit kartlari gosterildi
+- Finans takvimi ozeti kartlari eklendi
+- `7 gun icinde finansman odemesi var` uyarisi eklendi
+- `Gecikmis finansman taksiti var` uyarisi eklendi
+- Sol menu bildirim rozeti finance uyarilarini sayar hale getirildi
 
-Onerilen tablo:
+### Kapsam disi
 
-- `finance_financing_installments`
-
----
-
-## Sprint 2F — Reports
-
-### Kapsam
-
-- Aylik gider trendi
-- Kategori dagilimi
-- Nakit akisi
-- Net servet zaman cizgisi
-- Portfoy dagilimi
+- Gercek push notification / e-posta / Telegram bildirimi
+- Otomatik recurring transaction sistemi
 
 ---
 
-## Sprint 2G — Calendar & Notifications
+## Sprint 2G — Finance Stable Polish & Hardening
+
+**Durum:** Siradaki sprint.
+
+### Hedef
+
+Finance fazini V7.0 Stable release'e hazirlamak.
 
 ### Kapsam
 
-- Kredi taksitleri takvime duser
-- Kart ekstresi takvime duser
-- Otomatik odemeler gorunur
-- Yaklasan finansal yukumlulukler bildirim uretir
+- V7 Finance Stable kabul kontrolu
+- Service worker cache stratejisi temizligi
+- V6/V7 version metadata uyumsuzluklarini temizleme
+- Public repo security checklist
+- Mobil ve masaustu son UX kontrolu
+- Basit test/quality gate iyilestirmesi
+- Release notes ve handoff paketinin finalize edilmesi
 
 ---
 

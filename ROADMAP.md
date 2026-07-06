@@ -57,91 +57,126 @@ Finance modulu kullaniciyi veri girmeye zorlayan bir muhasebe programi olmayacak
 
 #### Sprint 2A.0 — CTO Handover & Roadmap Lock
 
-**Durum:** Bu sprint
+**Durum:** Tamamlandi
 
-- ROADMAP.md olustur
-- BACKLOG.md olustur
-- CTO handover dokumani olustur
-- Finance faz planini repo icine al
-- README / VERSION / CHANGELOG / RELEASE_NOTES dosyalarini faz durumuyla uyumlu hale getir
+- ROADMAP.md olusturuldu
+- BACKLOG.md olusturuldu
+- CTO handover dokumani olusturuldu
+- Finance faz plani repo icine alindi
+- README / VERSION / CHANGELOG / RELEASE_NOTES faz durumuyla uyumlu hale getirildi
 
 #### Sprint 2A.1 — Finance Accounts UI
 
-- Sol menuye Finans ekle
-- Finans ana ekran shell'i olustur
-- finance_accounts listesini cek
-- Hesap ekleme / duzenleme / pasife alma
-- Nakit, banka, kredi karti, doviz, altin, kripto, yatirim hesap tipleri
-- Toplam nakit, toplam borc, net hesap ozeti
+**Durum:** Tamamlandi
+
+- Sol menuye Finans eklendi
+- Finans ana ekran shell'i olusturuldu
+- finance_accounts listesi yuklendi
+- Hesap ekleme / duzenleme / pasife alma eklendi
+- Nakit, banka, kredi karti, doviz, altin, kripto, yatirim hesap tipleri desteklendi
+- Toplam nakit, toplam borc, net hesap ozeti eklendi
 
 #### Sprint 2A.2 — Finance Transactions UI
 
-- Gelir / gider / transfer kaydi
-- Hesap ve kategori baglantisi
-- Tarih, vade, durum, not, etiket
-- Hareket listesi ve filtreleme
+**Durum:** Tamamlandi
 
-#### Sprint 2A.3 — Account Balance Logic
+- Gelir / gider kaydi eklendi
+- Hesap ve kategori baglantisi eklendi
+- Tarih, durum, not ve odeme yontemi alanlari eklendi
+- Hareket listesi ve filtreleme eklendi
 
-- Transaction sonrasi hesap bakiyesi mantigi
-- Transferlerde iki hesap etkisi
-- Kredi karti / borc hesaplarinda is_asset=false davranisi
-- Basit tutarlilik kontrolleri
+#### Sprint 2A.3 — Balance Engine + Transfers
 
-#### Sprint 2B — Budget
+**Durum:** Tamamlandi
 
-- Budget database patch
-- Aylik butce
-- Kategori butcesi
-- Gerceklesen / kalan
-- Limit asimi sinyalleri
+- Transaction sonrasi hesaplanan bakiye motoru eklendi
+- Transferlerde iki hesap etkisi eklendi
+- Kredi karti / borc hesaplarinda is_asset=false davranisi netlestirildi
+- Basit tutarlilik kontrolleri eklendi
+
+#### Sprint 2A.4 — Finance Polish & Reconciliation
+
+**Durum:** Tamamlandi
+
+- Hesaplanan / manuel bakiye farki gosterildi
+- Manuel bakiyeyi hesaplanan bakiyeye esitle aksiyonu eklendi
+- Transfer varsayilanlari ve para birimi guard'lari iyilestirildi
+
+#### Sprint 2A.5 — Today Dashboard Finance Cards
+
+**Durum:** Tamamlandi
+
+- Bugun dashboard altina Finance ozet kartlari eklendi
+- Varlik, borc, net durum, gelir/gider/net akis kartlari gosterildi
+
+#### Sprint 2B.0 — Budget Foundation
+
+**Durum:** Tamamlandi
+
+- `finance_budgets` temeli eklendi
+- Aylik kategori butcesi eklendi
+- Gerceklesen / kalan / kullanim orani hesaplari eklendi
+- Limit asimi sinyalleri eklendi
 
 #### Sprint 2C.0 — Financing / Loan Tracking Foundation
 
-- Banka kredisi ve katilim finansmani kaydi
-- Katilimevim / Fuzulevim / Birevim benzeri finansmanlar
-- Komisyon / organizasyon ucreti takibi
-- Toplam vade, aylik odeme, odenen ay, kalan ay hesaplari
-- Odenen toplam, kalan toplam ve ilerleme yuzdesi
+**Durum:** Production test edildi ve onaylandi
+
+- Banka kredisi ve katilim finansmani kaydi eklendi
+- Katilimevim / Fuzulevim / Birevim benzeri finansmanlar desteklendi
+- Komisyon / organizasyon ucreti takibi eklendi
+- Toplam vade, aylik odeme, odenen/kalan ay hesaplari eklendi
+- Odenen toplam, kalan toplam ve ilerleme yuzdesi eklendi
 
 #### Sprint 2C.1 — Financing Installment Schedule
 
-- Ay ay taksit plani
-- Odendi / gecikti / bekliyor durumlari
-- Dekont/dokuman baglantisi hazirligi
+**Durum:** Production test edildi ve onaylandi
+
+- Ay ay taksit plani eklendi
+- Odendi / gecikti / bekliyor / kismi / iptal durumlari eklendi
+- Taksit plani kartlari ve otomatik plan olusturma eklendi
+- Finansman ozetleri taksit kayitlarindan guncellenir hale getirildi
 
 #### Sprint 2D — Finance Dashboard
 
-- Finansal Durum ana ekrani
-- Toplam nakit
-- Toplam varlik
-- Toplam borc
-- Net servet
-- Bu ay gelir / gider / tasarruf
-- Yaklasan finansal yukumlulukler
-- Yaklasan kredi/finansman odemeleri
+**Durum:** Production test edildi ve onaylandi
 
-#### Sprint 2E — Investments
+- Finansal durum dashboard'u eklendi
+- Toplam varlik, toplam borc, net durum kartlari eklendi
+- Bu ay net akis, butce kullanimi ve kalan finansman kartlari eklendi
+- Yaklasan taksitler ve dikkat edilecekler alani eklendi
 
-- Altin, doviz, fon, hisse, BES, kripto hazirligi
-- Portfoy dagilimi
-- Maliyet / guncel deger alanlari
+#### Sprint 2E — Finance Reports Foundation
 
-#### Sprint 2F — Finance Reports
+**Durum:** Production test edildi ve onaylandi
 
-- Aylik gider trendi
-- Kategori dagilimi
-- Nakit akisi
-- Net servet zaman cizgisi
-- Portfoy dagilimi
+- Aylik gelir/gider raporu eklendi
+- Kategori bazli gider raporu eklendi
+- Finansman/kredi odeme raporu eklendi
+- Butce / gerceklesen raporu eklendi
+- Tarih araligi filtresi ve CSV export altyapisi eklendi
 
-#### Sprint 2G — Calendar & Notifications
+#### Sprint 2F — Finance Calendar & Notifications Foundation
 
-- Kart ekstresi
-- Kredi taksiti
-- Otomatik odeme
-- Geciken finans kayitlari
-- Limit asimi / hedef sapmasi bildirimleri
+**Durum:** Production test edildi ve onaylandi
+
+- Finansman/kredi taksitleri takvime baglandi
+- Takvim ajandasinda finansman taksit kartlari gosterildi
+- Yaklasan 7 gun odeme uyarisi eklendi
+- Gecikmis finansman taksiti uyarisi eklendi
+- Bildirim rozeti finance uyarilarini da sayar hale getirildi
+
+#### Sprint 2G — Finance Stable Polish & Hardening
+
+**Durum:** Siradaki sprint
+
+- V7 Finance Stable kabul kontrolu
+- Service worker cache stratejisi temizligi
+- V6/V7 metadata uyumsuzluklarini temizleme
+- Public repo security checklist
+- Mobil UX son kontrol
+- Basit test/quality gate iyilestirmesi
+- V7.0 Finance Stable release hazirligi
 
 ### Faz 2 stable kabul kriterleri
 
