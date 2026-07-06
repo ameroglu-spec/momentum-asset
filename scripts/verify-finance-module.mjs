@@ -59,7 +59,19 @@ const checks = [
   ['finance financing SQL exists', existsSync('sql/finance_financing_plans.sql')],
   ['finance financing UI title exists', app.includes('Finansmanlar / Krediler')],
   ['finance financing writes are user scoped', app.includes("sb.from('finance_financing_plans').update(row).eq('id',id).eq('user_id',user.id)") && app.includes("sb.from('finance_financing_plans').delete().eq('id',id).eq('user_id',user.id)")],
-  ['service worker cache bumped to 2C.0', sw.includes('momentum-hub-v7-sprint-2c0-financing-loan-tracking')],
+
+  ['finance financing installments state exists', app.includes('financeFinancingInstallments:[]')],
+  ['load() selects finance_financing_installments', app.includes("sb.from('finance_financing_installments').select('*').eq('user_id',user.id)")],
+  ['financeFinancingInstallmentsForPlan exists', app.includes('function financeFinancingInstallmentsForPlan(')],
+  ['financeInstallmentSummary exists', app.includes('function financeInstallmentSummary(')],
+  ['financeFinancingInstallmentsList exists', app.includes('function financeFinancingInstallmentsList(')],
+  ['financeFinancingInstallmentForm exists', app.includes('function financeFinancingInstallmentForm(')],
+  ['saveFinanceFinancingInstallment exists', app.includes('async function saveFinanceFinancingInstallment(')],
+  ['deleteFinanceFinancingInstallment exists', app.includes('async function deleteFinanceFinancingInstallment(')],
+  ['finance financing installments SQL exists', existsSync('sql/finance_financing_installments.sql')],
+  ['finance installments UI title exists', app.includes('Taksit Planı')],
+  ['finance installment writes are user scoped', app.includes("sb.from('finance_financing_installments').update(row).eq('id',id).eq('user_id',user.id)") && app.includes("sb.from('finance_financing_installments').delete().eq('id',id).eq('user_id',user.id)")],
+  ['service worker cache bumped to 2C.1', sw.includes('momentum-hub-v7-sprint-2c1-financing-installments')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

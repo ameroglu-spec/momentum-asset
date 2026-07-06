@@ -131,7 +131,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2B.0 — Budget Foundation
 
@@ -155,9 +155,11 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
-## Aktif Sprint
+## Tamamlanan Sprint
 
 ### Sprint 2C.0 — Financing / Loan Tracking Foundation
+
+**Durum:** Production test edildi ve kullanici tarafindan onaylandi.
 
 **Hedef:** Banka kredisi ve Katilimevim/Fuzulevim/Birevim benzeri katilim finansmani odemelerini Finance icinde takip etmek.
 
@@ -188,6 +190,32 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 
 ---
 
+## Aktif Sprint
+
+### Sprint 2C.1 — Financing Installment Schedule
+
+**Hedef:** Finansman/kredi kayitlari icin ay ay taksit plani, odeme durumu ve gecikme takibi eklemek.
+
+#### Kapsam
+
+- [x] `finance_financing_installments` SQL dosyasini ekle
+- [x] `state.financeFinancingInstallments` alanini ekle
+- [x] Taksit verisini user scoped yukle
+- [x] Taksit planı helper fonksiyonlarini ekle
+- [x] Finansman kartlari altina `Taksit Planı` bolumunu ekle
+- [x] Taksit ekleme / duzenleme / silme UI'i ekle
+- [x] Finansman kaydindan otomatik taksit planı olusturma aksiyonu ekle
+- [x] Taksit durumlarini destekle: bekliyor, odendi, kismi odendi, gecikti, iptal
+- [x] Service worker cache 2C.1'e guncelle
+
+#### Not
+
+- Ilk surumde taksitler manuel veya plan kaydindan otomatik olusturulur.
+- Gecikme durumu vade tarihi bugunden eskiyse UI'da otomatik sinyal verir.
+- Dekont/dokuman baglantisi sonraki sprintlere kaldi.
+
+---
+
 ## Finance Faz Backlog
 
 ### Database / Architecture
@@ -196,7 +224,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [ ] `finance_seed.sql` dosyasini tekrar calistirilabilir hale getir
 - [ ] Budget tablolari tasarla: `finance_budgets`, `finance_budget_items`
 - [x] Finansman/kredi takip tablosu tasarla: `finance_financing_plans`
-- [ ] Installment tablosu tasarla: `finance_financing_installments`
+- [x] Installment tablosu tasarla: `finance_financing_installments`
 - [ ] Recurring transaction yapisi tasarla
 - [ ] Foreign key tenant butunlugunu guclendir
 - [ ] Finance storage ile mevcut document merkezi arasindaki iliskiyi netlestir
@@ -208,6 +236,7 @@ Bu backlog CTO tarafindan yonetilir. Yeni isler once burada siniflandirilir, son
 - [x] Transfers UI
 - [ ] Budget UI
 - [x] Financing / Loan Tracking UI
+- [x] Financing Installment Schedule UI
 - [ ] Finance Dashboard
 - [ ] Finance Reports
 - [ ] Finance Calendar integration

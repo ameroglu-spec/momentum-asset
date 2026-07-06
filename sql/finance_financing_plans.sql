@@ -1,5 +1,6 @@
 -- Sprint 2C.0 Financing / Loan Tracking Foundation
 -- Run in Supabase SQL Editor.
+-- Idempotent: safe to run more than once.
 
 begin;
 
@@ -19,9 +20,23 @@ create table if not exists public.finance_financing_plans (
   status text not null default 'active' check (status in ('active','completed','paused')),
   notes text,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint finance_financing_plans_paid_months_check check (paid_months <= total_months)
+  updated_at timestamptz not null default now()
 );
+
+-- Add cross-column check separately so reruns do not fail with 42710.
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conrelid = 'public.finance_financing_plans'::regclass
+      and conname = 'finance_financing_plans_paid_months_check'
+  ) then
+    alter table public.finance_financing_plans
+      add constraint finance_financing_plans_paid_months_check
+      check (paid_months <= total_months);
+  end if;
+end $$;
 
 alter table public.finance_financing_plans enable row level security;
 

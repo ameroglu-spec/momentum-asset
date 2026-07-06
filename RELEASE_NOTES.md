@@ -1,5 +1,35 @@
 # Momentum Hub Release Notes
 
+## Sprint 2C.1 — Financing Installment Schedule
+
+Bu sprint finansman/kredi kayıtlarına ay ay taksit planı ve ödeme durumu takibi ekler.
+
+### Ozet
+
+- `finance_financing_installments` tablosu için SQL dosyası eklendi.
+- Finansman kartlarına `Taksit Planı` bölümü eklendi.
+- Kullanıcı taksit ekleyebilir, düzenleyebilir ve silebilir.
+- Taksit durumları desteklenir: bekliyor, ödendi, kısmi ödendi, gecikti, iptal.
+- Finansman kaydındaki vade ve aylık ödeme üzerinden otomatik taksit planı oluşturulabilir.
+- Vade tarihi geçmiş bekleyen taksitler UI'da gecikti olarak sinyal verir.
+- Service worker cache anahtarı 2C.1'e güncellendi.
+
+### Supabase SQL
+
+Supabase SQL Editor'da çalıştırılacak dosya:
+
+```text
+sql/finance_financing_installments.sql
+```
+
+### Onerilen commit mesaji
+
+```text
+feat: add financing installment schedule
+```
+
+---
+
 ## Sprint 2C.0 — Financing / Loan Tracking Foundation
 
 Bu sprint Finance modülüne banka kredisi ve katılım finansmanı ödeme takibini ekler.

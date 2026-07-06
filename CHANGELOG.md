@@ -1,5 +1,30 @@
 # Changelog
 
+## Sprint 2C.1 — Financing Installment Schedule
+
+### Added
+
+- Added `finance_financing_installments` loading into app state.
+- Added installment schedule helpers for per-plan rows, status summary, and overdue signal.
+- Added `Taksit Planı` section inside financing/loan cards.
+- Added installment create/edit/delete UI.
+- Added automatic installment generation from financing plan term/monthly payment.
+- Added `sql/finance_financing_installments.sql` with RLS own-user policies.
+
+### Changed
+
+- Updated service worker cache key for Sprint 2C.1.
+- Expanded Finance verification script for installment schedule.
+
+### Verification
+
+- `node scripts/verify-finance-module.mjs`
+- `node scripts/verify-finance-accounts.mjs`
+- `node --check app.js`
+- `node --check sw.js`
+
+---
+
 ## Sprint 2C.0 — Financing / Loan Tracking Foundation
 
 ### Added
